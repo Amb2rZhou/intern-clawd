@@ -1,0 +1,48 @@
+.DS_Store
+*.pyc
+__pycache__/
+
+# Secrets
+.env
+*.env
+!config.env.example
+*secret*
+*token*
+
+# Personal runtime data
+inbox.md
+telemetry.jsonl
+maintenance.log
+reorganize.log
+weekly.log
+monthly.log
+progress.md
+interest-profile.json
+MEMORY.md
+tasks.md
+results.md
+runtime.json
+task-graph.json
+task-index.json
+
+# Personal wiki content (template ships with empty skeleton)
+# Comment these out if you want to track your own wiki content in this repo
+work/wiki/projects/*.md
+work/wiki/people/*.md
+work/wiki/decisions/*.md
+work/wiki/patterns/*.md
+life/wiki/projects/*.md
+life/wiki/topics/*.md
+life/wiki/reflections/*.md
+life/wiki/patterns/*.md
+work/raw/**
+life/raw/**
+raw/**
+
+# Keep .gitkeep markers
+!**/.gitkeep
+
+# Claude session temp files
+.codepilot-uploads/
+session-summaries/
+deliverables/
