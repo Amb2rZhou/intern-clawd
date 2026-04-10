@@ -1,8 +1,25 @@
-# clawd — Claude Code 实习生 Agent 系统
+# intern-clawd — A Personal Secretary OS for Claude Code
 
 把 Claude Code 从「每次失忆的编程工具」改造成「跨 session 长记性、跨设备多入口、有角色和仪式感的私人秘书」。
 
-> **clawd** = **Claude** + **wd** (working directory)。一个驻留在 `~/.clawd/` 的秘书 agent，管理你的工作 / 生活两个域的知识库。
+不是又一个 LLM wiki，是一个**完整的秘书操作系统**：知识库只是其中一个器官。
+
+> **clawd** = **Claude** + **wd** (working directory)。一个驻留在 `~/.clawd/` 的秘书 agent，管理你的工作 / 生活两个域的知识库，覆盖从「想到 → 捕获 → 消化 → 检索 → 复盘」全链路。
+
+---
+
+## 跟同类项目的差异
+
+| | intern-clawd | LLM Wiki 工具<br>(`llm-wiki-agent` 等) | LLM 记忆框架<br>(`mem0`, `letta`) | Obsidian + LLM<br>(`obsidian-mind` 等) |
+|---|---|---|---|---|
+| 双域（work / life） | ✅ | ❌ 单一 wiki | ❌ 通用记忆 | ❌ 单 vault |
+| 角色化 ritual（站会/周会/复盘） | ✅ 7 个固定命令 | ❌ | ❌ | ❌ |
+| 多入口 capture | ✅ 5+ 渠道 | ❌ 单入口 | ❌ API only | ⚠️ Obsidian only |
+| Session 路由 hooks | ✅ 自动归档 jsonl | ❌ | ❌ | ❌ |
+| 安装方式 | ✅ clone 到 `~/.clawd`，零服务器 | ⚠️ 需后端服务 | ⚠️ 需后端 / DB | ✅ 但绑定 Obsidian |
+| 自维护（lint + 月度 maintenance） | ✅ | ⚠️ 部分 | ❌ | ❌ |
+
+**核心差异**：别人在做「知识库 + LLM」，我们在做「**有人格的秘书 + 7 个仪式 + 5 个入口**」。Wiki 是这个秘书的笔记本，不是产品本身。
 
 ---
 
@@ -49,7 +66,9 @@
   schema ← 约束层（人 + agent 共同维护）
 ```
 
-参考 Andrej Karpathy 的 LLM Wiki 三层模式。
+知识层的三层架构直接借鉴 **Andrej Karpathy** 提出的 [LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) 模式：把"事实源"和"LLM 综合层"严格分离，让 agent 只能 Read raw 不能 Write，避免幻觉污染源头。详细思想见 Karpathy 的 gist 原文。
+
+intern-clawd 在此基础上扩展：在 wiki 层之上叠加了**角色 + 仪式 + 多入口**，把"知识库"变成"秘书"。
 
 ---
 
@@ -251,8 +270,9 @@ cp claude-hooks/* ~/.claude/hooks/
 
 ## 致谢 & 灵感来源
 
-- [Andrej Karpathy LLM Wiki 模式](https://karpathy.ai/) — raw / wiki / schema 三层架构
-- [Claude Code](https://docs.claude.com/claude-code) — 整套 hook 系统的基石
+- **[Andrej Karpathy](https://karpathy.ai/)** — [LLM Wiki 三层架构](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)（raw / wiki / schema）。intern-clawd 知识层完全建立在这个模式之上。
+- **[Claude Code](https://docs.claude.com/claude-code)** — 整套 hook 系统、CLAUDE.md 注入机制、SessionStart/SessionEnd 生命周期的基石。
+- 同类项目调研：[`llm-wiki-agent`](https://github.com/) 和 [`obsidian-mind`](https://github.com/) 把 Karpathy 的想法做成了纯 wiki 工具。intern-clawd 的差异是在 wiki 层之上加了**人格 + 仪式 + 多入口**，做成秘书而不是档案柜。
 
 ---
 
