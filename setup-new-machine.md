@@ -153,8 +153,7 @@ cat /tmp/collect-debug.log # 应该有调用记录
 | Shortcuts.app 设的快捷键无效 | 信息面板里的「指定快捷键」没同步到系统服务列表 | 手动到系统设置 → 键盘快捷键 → 服务里再绑一遍 |
 | Quick Action 调脚本 `~` 不展开 | macOS Quick Action 沙盒不展开 `~` | 改用绝对路径 `$HOME/.clawd/collect.sh` |
 | `~` cwd 启动的 session 全堆在 -Users-USERNAME/ | Claude Code 默认按启动 cwd 归档 | 装 `mark-session-project.sh` + `session-relocate.py` 路由 hooks |
-| `claude-hi` 把 cwd 设成 `~` | claude-hi 默认配置 | 改 `~/.claude-hi/config.json` 里 `claude.workingDirectory: ~ → ~/.clawd` |
-| permission-router 卡 600s | Mr. Krabs HTTP 23333 不可达，curl 一直等 | router 加 `--connect-timeout 2`，并且 settings.json 里 PermissionRequest 只留 router 一条 |
+| permission-router 卡 600s | 上游 HTTP 服务不可达，curl 一直等 | router 加 `--connect-timeout 2`，并且 settings.json 里 PermissionRequest 只留 router 一条 |
 | inject-wiki-context.sh 在所有 session 都注 1.4K tok | 没做 cwd 门控 | 加 cwd 检查，仅 `~/.clawd*` 时注入 |
 
 ---
@@ -185,7 +184,5 @@ crontab -l | grep reorganize-index   # 应该看到 9:07 AM 那行
 
 ## 7. 不在这份文档里的东西
 
-- **Mr. Krabs.app**：第三方桌面 app，独立安装。如果用就装，不用就把 settings.json 里 `clawd-hook.js` 那些条目都删掉。
+- **Mr. Krabs.app**：第三方桌面 app，独立安装。如果用就装，不用就把 settings.json 里相关条目都删掉。
 - **Claude-to-IM bridge**：手机渠道（飞书/微信），在 `~/.claude-to-im/`，独立项目，按它自己的 README 装。
-- **claude-hi**：Hi IM 桌面 app 接入，独立安装，记得改 `~/.claude-hi/config.json` 的 `workingDirectory`。
-- **AFI / x-monitor**：独立 cron 项目，分别用 `anthropic` / `openai` Python SDK，**跟秘书系统完全独立**，按它们各自的 README 部署。

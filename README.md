@@ -262,7 +262,6 @@ cp claude-hooks/* ~/.claude/hooks/
 
 - **Mr. Krabs.app** — 桌面 bubble，权限审批 + 通知
 - **Claude-to-IM bridge** — 手机渠道（飞书 / 微信）
-- **claude-hi** — Hi IM 桌面接入
 
 按需自行集成。
 

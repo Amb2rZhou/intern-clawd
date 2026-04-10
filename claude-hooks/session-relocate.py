@@ -50,10 +50,9 @@ def encode_cwd(cwd: str) -> str:
     """Match Claude Code's project-dir encoding: non-[a-zA-Z0-9-] -> '-'.
 
     Examples:
-        /Users/alice/news-bot          -> -Users-alice-news-bot
+        /Users/alice/my-project        -> -Users-alice-my-project
         /Users/alice/.clawd            -> -Users-alice--clawd
         /Users/alice/site.github.io    -> -Users-alice-site-github-io
-        /Users/alice/Desktop/录音       -> -Users-alice-Desktop----
     """
     import re
     return re.sub(r"[^a-zA-Z0-9-]", "-", cwd.rstrip("/"))
