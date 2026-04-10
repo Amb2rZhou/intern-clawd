@@ -246,6 +246,27 @@ cp claude-hooks/* ~/.claude/hooks/
 
 ---
 
+## Risks & Uninstall
+
+装这个会动你机器上几个全局文件（`~/.claude/CLAUDE.md`、`settings.json`、`crontab`、`~/.zshrc`）。**装之前请读** [`RISKS.md`](RISKS.md) —— 完整列出所有已知风险、影响范围、缓解措施，以及作者明确说"没修"的地方。
+
+**承诺**：装了 intern-clawd **不会影响你在 `~/.clawd` 之外跑裸 Claude Code 的能力**。
+- 全局 CLAUDE.md 注入的规则已经软化为「仅当 ~/.clawd 存在」，对无关项目零干扰
+- SessionStart hook 在非秘书 cwd 用纯 bash 几毫秒早返回，不启动 python3
+- cwd 就是天然的模式开关：进 `~/.clawd` = 秘书模式，离开 = 完全裸 CC
+
+**一键卸载**：
+
+```bash
+bash uninstall.sh
+```
+
+会做：备份所有要改的文件 → 移除全局 CLAUDE.md 的 wiki 同步段 → 清理 settings.json hooks → 清理 crontab → 清理 zsh alias → 询问是否删 ~/.clawd 数据（默认不删，需要二次确认）→ 生成 `restore.sh` 反悔可一键还原。
+
+详情见 [`RISKS.md`](RISKS.md) 「怎么撤掉」section。
+
+---
+
 ## 设计原则
 
 - **认知卸载优先于 token 节省** —— 让你少想，比让 LLM 少花钱重要
