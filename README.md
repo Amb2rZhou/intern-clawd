@@ -3,6 +3,8 @@
 [![syntax](https://github.com/Amb2rZhou/intern-clawd/actions/workflows/syntax.yml/badge.svg)](https://github.com/Amb2rZhou/intern-clawd/actions/workflows/syntax.yml)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
+**中文** | [English](README.en.md)
+
 把 Claude Code 从「每次失忆的编程工具」改造成「跨 session 长记性、跨设备多入口、有角色和仪式感的私人秘书」。
 
 不是又一个 LLM wiki，是一个**完整的秘书操作系统**：知识库只是其中一个器官。
