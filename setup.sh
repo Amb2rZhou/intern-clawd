@@ -16,6 +16,16 @@ echo "[1/6] 检查依赖..."
 command -v python3 >/dev/null || { echo "ERROR: 需要 python3"; exit 1; }
 command -v git >/dev/null || { echo "ERROR: 需要 git"; exit 1; }
 
+# inject-wiki-context.sh 硬编码 /usr/bin/python3，确保它存在
+# 没装的话 macOS 用户跑: xcode-select --install
+if [[ ! -x /usr/bin/python3 ]]; then
+    echo "ERROR: /usr/bin/python3 不存在"
+    echo "  hooks/inject-wiki-context.sh 硬编码使用 /usr/bin/python3"
+    echo "  macOS: 跑 xcode-select --install 装 Command Line Tools"
+    echo "  Linux: 创建符号链接 sudo ln -s \$(which python3) /usr/bin/python3"
+    exit 1
+fi
+
 CLAUDE_BIN=$(which claude 2>/dev/null || echo "$HOME/.local/bin/claude")
 if [[ ! -x "$CLAUDE_BIN" ]]; then
     echo "WARNING: 没找到 claude CLI，手机渠道可能不工作"
@@ -63,16 +73,20 @@ echo "[5/6] 配置全局 CLAUDE.md..."
 mkdir -p "$CLAUDE_DIR"
 if [[ -f "$CLAUDE_DIR/CLAUDE.md" ]]; then
     if ! grep -q "Wiki 知识同步" "$CLAUDE_DIR/CLAUDE.md"; then
+        # 先备份，便于 uninstall.sh 精准还原
+        BACKUP="$CLAUDE_DIR/CLAUDE.md.before-clawd-$(date +%Y%m%d-%H%M%S)"
+        cp "$CLAUDE_DIR/CLAUDE.md" "$BACKUP"
+        echo "  已备份原文件到 $BACKUP"
         cat >> "$CLAUDE_DIR/CLAUDE.md" << 'WIKI_RULE'
 
-## Wiki 知识同步（所有 session 适用）
+## Wiki 知识同步（仅当 ~/.clawd 存在）
 
-用户有一个知识库在 `~/.clawd/`，分 work 和 life 两个域。不管当前在哪个项目目录工作，如果这次交互产生了值得持久化的知识（项目决策、新发现、架构变更、重要结论），在任务结束时：
+如果 `~/.clawd/` 目录存在（即用户装了 intern-clawd 秘书系统），且本次交互产生了值得持久化的知识（项目决策、架构变更、重要结论），可以在任务结束时考虑：
 
-1. 追加一条到对应域的 `~/.clawd/{work|life}/wiki/log.md`，格式：`## [YYYY-MM-DD HH:MM] {operation} | {标题}`，1-3 行摘要
-2. 如果涉及已有 wiki 页面的更新，提醒用户确认后再改
+1. 追加一条到 `~/.clawd/{work|life}/wiki/log.md`，格式：`## [YYYY-MM-DD HH:MM] {operation} | {标题}`，1-3 行摘要
+2. 涉及已有 wiki 页面更新时，先和用户确认
 
-这不是可选的。每次有价值的交互都应该留痕到 log.md。闲聊、简单问答可以跳过。
+`~/.clawd` 不存在则跳过此规则。闲聊、简单问答、跟知识库无关的任务也跳过。
 WIKI_RULE
         echo "  已添加 wiki 同步规则"
     else

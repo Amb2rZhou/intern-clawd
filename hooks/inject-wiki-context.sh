@@ -11,19 +11,21 @@
 
 CLAWD_DIR="${CLAWD_DIR:-$HOME/.clawd}"
 
-# 读取 hook 输入获取 cwd
+# 读取 hook 输入
 INPUT=$(cat)
-CWD=$(echo "$INPUT" | /usr/bin/python3 -c "import json,sys
-try:
-    print(json.loads(sys.stdin.read()).get('cwd',''))
-except: pass" 2>/dev/null)
+
+# 纯 bash 提取 cwd（不启 python3，节省 50-200ms 启动开销）
+# JSON 形如 {"cwd":"/path/...","session_id":"..."}
+CWD=$(printf '%s' "$INPUT" | grep -o '"cwd"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/.*"\([^"]*\)"$/\1/')
 
 # cwd 门控：只在 $CLAWD_DIR 工作区注入
+# 早返回——非秘书 session 根本不启动 python3，零污染裸 CC
 case "$CWD" in
   "$CLAWD_DIR"|"$CLAWD_DIR"/*) ;;
   *) exit 0 ;;
 esac
 
+# 只有真在秘书工作区时才启 python3 拼上下文
 /usr/bin/python3 -c "
 import json
 
