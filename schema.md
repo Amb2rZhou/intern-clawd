@@ -169,7 +169,7 @@ log_op("ingest", domain="work", pages_touched=3, source="terminal")
 
 字段：ts, op, domain, pages, status, source, detail
 op 类型：ingest / query / lint / maintenance / collect / process
-source 类型：terminal / feishu / wechat / cron / shortcut
+source 类型：terminal / im / cron / shortcut
 
 ## 跨 Session 状态接力（Progress File）
 

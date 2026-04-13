@@ -10,7 +10,7 @@
 | **`⌃⌥C`** 全局快捷键 | 任何 app：选中文字 → `⌘C` → `⌃⌥C` → 一键存进 inbox + 通知 |
 | **`clawd`** 终端命令 | 任何目录敲一个词 → 自动 cd 到 `~/.clawd` + 启动 claude（进秘书模式） |
 | **`inbox`** 终端命令 | 终端里敲一个词 → 等同于 ⌃⌥C，把剪贴板存进 inbox.md |
-| **`cti`** 终端命令 | 启动 claude-to-im daemon（飞书/微信通道） |
+| **`cti`** 终端命令 | 启动 IM bridge daemon（手机通道，需另装） |
 
 ## 二、秘书对话命令（在 claude session 里直接说）
 

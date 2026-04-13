@@ -182,4 +182,4 @@ crontab -l | grep reorganize-index   # 应该看到 9:07 AM 那行
 
 ## 7. 不在这份文档里的东西
 
-- **Claude-to-IM bridge**：手机渠道（飞书/微信），在 `~/.claude-to-im/`，独立项目，按它自己的 README 装。
+- **IM bridge**：手机通道，独立项目。任何 IM bot 只需调用 `claude-wrapper.sh -p "消息"` 即可接入，见 README §手机 IM 通道。

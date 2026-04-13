@@ -35,7 +35,7 @@
 | 痛点 | clawd 怎么解 |
 |---|---|
 | 每开一个新 session 等于失忆 | 持久 wiki + 每次 SessionStart 自动注入 index |
-| 必须坐下打开终端才能跟它说话 | 全局快捷键 `⌃⌥C` 一秒收集 / 终端 alias / 飞书 / 微信 / 桌面 bubble |
+| 必须坐下打开终端才能跟它说话 | 全局快捷键 `⌃⌥C` 一秒收集 / 终端 alias / 手机 IM 通道（可选） |
 | 没有"角色"概念，每次都得重复 prompt | CLAUDE.md 里写死秘书人格 + 7 个固定 ritual（站会/周会/复盘/归档/继续/inbox/lint） |
 | 工作和生活的笔记混在一起 | 双域架构：work/ + life/，独立 index 和 log |
 | `~` 启动的 session 全堆在一个文件夹 | Session 路由 hooks 自动按项目搬 jsonl |
@@ -48,7 +48,7 @@
 ```
 ┌──────────────── 入口 ────────────────┐
 │ ⌃⌥C 全局快捷键   终端 alias `clawd`   │
-│ 飞书 / 微信       桌面 bubble          │
+│ 手机 IM（Telegram / 飞书 / 微信 / …）  │
 └────────────────┬─────────────────────┘
                  │
                  ▼
@@ -188,9 +188,9 @@ clawd             # 进入秘书模式
 ├── monthly-review.py          # 月度复盘
 ├── telemetry.py               # 操作日志（jsonl）
 │
-├── feishu_utils.py            # 飞书 API（可选）
-├── feishu-send.sh             # 飞书发送（可选）
-├── config.env.example         # Claude-to-IM bridge 配置模板（可选）
+├── feishu_utils.py            # 飞书通知（可选，参考实现）
+├── feishu-send.sh             # 飞书发送（可选，参考实现）
+├── config.env.example         # IM bridge 配置模板（可选）
 │
 ├── hooks/
 │   ├── inject-wiki-context.sh # SessionStart hook（cwd 门控）
@@ -274,13 +274,26 @@ bash uninstall.sh
 
 ---
 
-## 不在这个 repo 里的可选集成
+## 手机 IM 通道（可选）
 
-下面这些是 **clawd 友好但独立** 的项目，不强依赖：
+intern-clawd 的核心入口是终端，但你可以通过任何 IM 机器人连接秘书。原理很简单：
 
-- **Claude-to-IM bridge** — 手机渠道（飞书 / 微信）
+```
+手机发消息 → IM Bot → 调用 ~/.clawd/claude-wrapper.sh -p "消息" → 返回回复 → IM Bot → 手机收到回复
+```
 
-按需自行集成。
+**接入任意 IM 只需要两步：**
+
+1. 在你选的平台上建一个 bot（Telegram BotFather / Discord Bot / Slack App / 飞书自建应用 / …）
+2. 让 bot 收到消息时调用：
+   ```bash
+   ~/.clawd/claude-wrapper.sh -p "用户发来的消息"
+   ```
+   把 stdout 作为回复发回去
+
+wrapper 会自动处理命令路由（站会、周会等触发词）和上下文注入，跟终端体验一致。
+
+本 repo 附带了飞书（Lark）的参考实现（`feishu_utils.py` / `feishu-send.sh`），可以作为接入其他 IM 的模板。
 
 ---
 

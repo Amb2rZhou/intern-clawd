@@ -57,7 +57,7 @@ if [[ -d "$CTI_DIR" ]]; then
     if [[ ! -f "$CTI_DIR/config.env" ]] && [[ -f "$CLAWD_DIR/config.env.example" ]]; then
         cp "$CLAWD_DIR/config.env.example" "$CTI_DIR/config.env"
         chmod 600 "$CTI_DIR/config.env"
-        echo "  已创建 config.env，请填入飞书凭证: $CTI_DIR/config.env"
+        echo "  已创建 config.env，请填入 IM 凭证: $CTI_DIR/config.env"
     elif [[ -f "$CTI_DIR/config.env" ]]; then
         # 更新路径
         sed -i '' "s|CTI_DEFAULT_WORKDIR=.*|CTI_DEFAULT_WORKDIR=$CLAWD_DIR|" "$CTI_DIR/config.env"
@@ -200,4 +200,4 @@ echo "  3. 输入 clawd 进入秘书模式，说「站会」试试"
 echo ""
 echo "可选："
 echo "  - 全局快捷键 ⌃⌥C：见 README §可选入口"
-echo "  - 手机渠道（飞书/微信）：编辑 $CTI_DIR/config.env"
+echo "  - 手机 IM 通道：见 README §手机 IM 通道"

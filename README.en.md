@@ -35,7 +35,7 @@ Vanilla Claude Code is just "a coding assistant that works one session at a time
 | Pain | How clawd fixes it |
 |---|---|
 | Every new session = amnesia | Persistent wiki + auto-injects index on every SessionStart |
-| You have to sit at a terminal to talk to it | `⌃⌥C` global hotkey, terminal aliases, Feishu, WeChat, desktop bubble |
+| You have to sit at a terminal to talk to it | `⌃⌥C` global hotkey, terminal aliases, mobile IM channel (optional) |
 | No "role" concept, you re-prompt every time | Persona baked into CLAUDE.md + 7 fixed rituals (standup / weekly / reflect / archive / resume / inbox / lint) |
 | Work and personal notes get mixed up | Dual-domain architecture: `work/` + `life/`, independent index and log |
 | Sessions started from `~` all pile into one folder | Session routing hooks auto-relocate JSONLs by project |
@@ -48,7 +48,7 @@ Vanilla Claude Code is just "a coding assistant that works one session at a time
 ```
 ┌──────────── capture ────────────┐
 │ ⌃⌥C global hotkey   `clawd` cmd │
-│ Feishu / WeChat     desktop bubble│
+│ Mobile IM (Telegram / Slack / …) │
 └──────────────┬──────────────────┘
                │
                ▼
@@ -188,9 +188,9 @@ The Chinese keywords (站会/周会/复盘/处理 inbox/归档/继续/检查/导
 ├── monthly-review.py          # Monthly review generator
 ├── telemetry.py               # Operation log (jsonl)
 │
-├── feishu_utils.py            # Feishu/Lark API (optional)
-├── feishu-send.sh             # Feishu/Lark sender (optional)
-├── config.env.example         # Claude-to-IM bridge config template (optional)
+├── feishu_utils.py            # Feishu/Lark notifications (optional, reference impl)
+├── feishu-send.sh             # Feishu/Lark sender (optional, reference impl)
+├── config.env.example         # IM bridge config template (optional)
 │
 ├── hooks/
 │   ├── inject-wiki-context.sh # SessionStart hook (cwd-gated)
@@ -261,13 +261,26 @@ See [`RISKS.md`](RISKS.md) "How to undo" section for details.
 
 ---
 
-## Optional integrations not in this repo
+## Mobile IM channel (optional)
 
-These are **clawd-friendly but independent** projects, not hard dependencies:
+The core entry point is the terminal, but you can connect the secretary to any IM bot. The pattern is simple:
 
-- **Claude-to-IM bridge** — mobile channel (Feishu / WeChat)
+```
+Phone message → IM Bot → call ~/.clawd/claude-wrapper.sh -p "message" → return reply → IM Bot → phone gets reply
+```
 
-Integrate as you see fit.
+**Connecting any IM takes two steps:**
+
+1. Create a bot on your platform (Telegram BotFather / Discord Bot / Slack App / Feishu / …)
+2. Have the bot call this on each incoming message:
+   ```bash
+   ~/.clawd/claude-wrapper.sh -p "the user's message"
+   ```
+   Send stdout back as the reply.
+
+The wrapper handles command routing (standup, weekly, etc.) and context injection automatically — same experience as the terminal.
+
+This repo includes a Feishu (Lark) reference implementation (`feishu_utils.py` / `feishu-send.sh`) that you can use as a template for other platforms.
 
 ---
 
