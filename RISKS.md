@@ -104,7 +104,7 @@ SessionStart hook 注入 wiki index，增加 prompt 输入。
 |---|---|
 | C1 | `setup.sh` 没有 `--dry-run`，跑了就开始改 |
 | C2 | macOS Shortcuts.app 全局快捷键这一段全靠手册（无法自动化，Apple 不开放） |
-| C3 | README 说"Linux 已支持"，但 `⌃⌥C` 全局快捷键是 macOS-only |
+| C3 | 目前仅支持 macOS，Linux 兼容是 roadmap 项 |
 | C4 | 没有 "tested against Claude Code version X.Y" 标注 |
 
 ---
@@ -141,7 +141,7 @@ bash ~/.clawd-uninstall-backup/{时间戳}/restore.sh
 
 ## 装之前自检清单
 
-- [ ] 我装的是 macOS（Linux 也能装但部分入口不可用）
+- [ ] 我装的是 macOS 14+
 - [ ] `xcode-select --install` 已跑过 / `/usr/bin/python3` 存在
 - [ ] 我的 `~/.claude/CLAUDE.md` 没有不能被备份/追加的敏感内容
 - [ ] 我的 `~/.claude` 不在外置盘 / 网络存储（避开 A4）

@@ -22,7 +22,7 @@ if [[ ! -x /usr/bin/python3 ]]; then
     echo "ERROR: /usr/bin/python3 不存在"
     echo "  hooks/inject-wiki-context.sh 硬编码使用 /usr/bin/python3"
     echo "  macOS: 跑 xcode-select --install 装 Command Line Tools"
-    echo "  Linux: 创建符号链接 sudo ln -s \$(which python3) /usr/bin/python3"
+    echo "  注意：目前仅支持 macOS"
     exit 1
 fi
 
