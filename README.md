@@ -21,7 +21,7 @@
 | 痛点 | clawd 怎么解 |
 |---|---|
 | 每开一个新 session 等于失忆 | 持久 wiki + 每次 SessionStart 自动注入 index |
-| 必须坐下打开终端才能跟它说话 | 全局快捷键 `⌃⌥C` 一秒收集 / 终端 alias / 手机 IM 通道（可选） |
+| 必须坐下打开终端才能跟它说话 | 任何 app 里 `⌃⌥C` 一键存到 inbox / 终端输入 `clawd` 直接开聊 / 手机 IM 通道（可选） |
 | 没有"角色"概念，每次都得重复 prompt | CLAUDE.md 里写死秘书人格 + 7 个固定 ritual（站会/周会/复盘/归档/继续/inbox/lint） |
 | 工作和生活的笔记混在一起 | 双域架构：work/ + life/，独立 index 和 log |
 | `~` 启动的 session 全堆在一个文件夹 | Session 路由 hooks 自动按项目搬 jsonl |
