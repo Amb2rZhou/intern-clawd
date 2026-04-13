@@ -43,6 +43,13 @@ work_idx = read_file(f'{clawd}/work/wiki/index.md')
 life_idx = read_file(f'{clawd}/life/wiki/index.md')
 progress = read_file(f'{clawd}/progress.md', max_lines=30)
 
+import os
+archives = []
+for d in ['work', 'life']:
+    p = f'{clawd}/{d}/wiki/index-archive.md'
+    if os.path.exists(p):
+        archives.append(d)
+
 progress_block = ''
 if progress and progress != '（空）':
     progress_block = f'''
@@ -51,6 +58,12 @@ if progress and progress != '（空）':
 {progress}
 请先处理或询问 boss 是否继续。'''
 
+archive_block = ''
+if archives:
+    archive_block = f'''
+
+> 注意：{', '.join(archives)} 域有 index-archive.md（冷区），热区找不到相关页面时可以去冷区检索。'''
+
 # 只注入动态状态，人格/规则交给 ~/.clawd/CLAUDE.md
 prompt = f'''## Wiki 当前状态（动态注入）
 
@@ -58,7 +71,7 @@ prompt = f'''## Wiki 当前状态（动态注入）
 {work_idx}
 
 ### Life 域 index
-{life_idx}{progress_block}'''
+{life_idx}{archive_block}{progress_block}'''
 
 print(json.dumps({'appendSystemPrompt': prompt}, ensure_ascii=False))
 "

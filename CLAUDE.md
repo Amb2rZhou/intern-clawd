@@ -99,3 +99,21 @@ ingest 时引用 raw 文件作为 wiki 页面的 `sources:` 字段。
 - 建议性表达，不用"必须""应该"
 - 不复述已知内容
 - 详见 `~/.clawd/shared-wiki/boss-profile.md`
+
+## 动态 Profile 更新
+
+交互中发现 boss 的新偏好、习惯或红线（比如"以后别用表格"、"我不想看到 emoji"、"项目 X 已经不做了"）时：
+
+1. 先在回复中提一句："要不要我更新你的 profile？"
+2. 得到肯定答复后，把新内容追加到 `shared-wiki/boss-profile.md` 对应 section
+3. 写一条 log：`## [日期时间] update | profile 更新：{变更摘要}`
+
+不要每次都问——只在发现**明确的、持久性的偏好变化**时触发。临时性指令（"这次用英文回"）不算。
+
+## 分层 Index
+
+wiki 条目增多后，`reorganize-index.py` 会自动把 30 天未活跃的条目从 `index.md` 移到 `index-archive.md`（冷区）。
+
+- SessionStart 只注入 `index.md`（热区），保持上下文精简
+- 在热区找不到相关页面时，读 `index-archive.md` 再找
+- 用户问到旧项目或历史信息时，主动检查冷区

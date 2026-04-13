@@ -46,6 +46,7 @@ raw/**
 backups/
 wiki-graph.html
 rollback-import.sh
+index-archive.md
 
 # Claude session temp files
 .codepilot-uploads/

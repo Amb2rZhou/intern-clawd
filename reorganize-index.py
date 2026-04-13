@@ -14,10 +14,14 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from feishu_utils import send_feishu_message
+try:
+    from feishu_utils import send_feishu_message
+except ImportError:
+    send_feishu_message = None
 
 CLAWD_DIR = Path.home() / ".clawd"
 STALE_DAYS = 30
+TIER_THRESHOLD = 50  # 超过此条目数时拆分热区/冷区
 
 
 def parse_index(path):
@@ -114,12 +118,44 @@ def rebuild_index(preamble, sections):
     return "\n".join(lines).strip() + "\n"
 
 
+def tier_split(sections):
+    """当条目总数超过 TIER_THRESHOLD 时，把冷门条目拆到 archive sections"""
+    cutoff = datetime.now() - timedelta(days=STALE_DAYS)
+
+    # 统计总可排序条目数
+    total = sum(1 for _, items in sections for i in items if i.get("active") is not None)
+    if total <= TIER_THRESHOLD:
+        return sections, [], 0
+
+    hot_sections = []
+    cold_sections = []
+    cold_count = 0
+
+    for section_title, items in sections:
+        hot_items = []
+        cold_items = []
+        for item in items:
+            if item.get("active") is None:
+                hot_items.append(item)  # 非条目行留在热区
+            elif item["active"] >= cutoff:
+                hot_items.append(item)
+            else:
+                cold_items.append(item)
+                cold_count += 1
+        hot_sections.append((section_title, hot_items))
+        if cold_items:
+            cold_sections.append((section_title, cold_items))
+
+    return hot_sections, cold_sections, cold_count
+
+
 def main():
     ask_mode = "--ask" in sys.argv
     questions = []
 
     for domain in ["work", "life"]:
         index_path = CLAWD_DIR / domain / "wiki" / "index.md"
+        archive_path = CLAWD_DIR / domain / "wiki" / "index-archive.md"
         preamble, sections = parse_index(index_path)
 
         if not sections:
@@ -127,9 +163,42 @@ def main():
 
         stale = sort_and_find_stale(sections)
 
-        # 重写排序后的 index
-        new_content = rebuild_index(preamble, sections)
-        index_path.write_text(new_content)
+        # 分层拆分：热区留 index.md，冷区移到 index-archive.md
+        hot_sections, cold_sections, cold_count = tier_split(sections)
+
+        if cold_count > 0:
+            # 写热区
+            new_content = rebuild_index(preamble, hot_sections)
+            index_path.write_text(new_content)
+
+            # 读已有冷区存档（如果有），合并
+            if archive_path.exists():
+                _, existing_cold = parse_index(archive_path)
+                # 按 section title 合并
+                merged = {}
+                for title, items in existing_cold + cold_sections:
+                    if title not in merged:
+                        merged[title] = []
+                    # 去重（按 link）
+                    existing_links = {i.get("link") for i in merged[title] if i.get("link")}
+                    for item in items:
+                        if item.get("link") and item["link"] not in existing_links:
+                            merged[title].append(item)
+                            existing_links.add(item["link"])
+                        elif not item.get("link"):
+                            merged[title].append(item)
+                cold_sections = list(merged.items())
+
+            archive_preamble = [f"# {domain.title()} Wiki Index (Archive)", "",
+                                f"> {STALE_DAYS} 天未活跃的条目自动归入此文件，秘书按需检索。"]
+            archive_content = rebuild_index(archive_preamble, cold_sections)
+            archive_path.write_text(archive_content)
+            print(f"[reorganize] {domain}: {cold_count} 条冷门条目移入 index-archive.md")
+        else:
+            # 没有冷区拆分，只重排
+            new_content = rebuild_index(preamble, sections)
+            index_path.write_text(new_content)
+
         print(f"[reorganize] {domain}/wiki/index.md 已按活跃度重排")
 
         # 收集过期条目的提问
@@ -142,10 +211,10 @@ def main():
         for q in questions:
             print(f"  - {q}")
 
-        if ask_mode:
-            msg_lines = ["📋 Wiki 整理提醒", ""]
+        if ask_mode and send_feishu_message:
+            msg_lines = ["Wiki 整理提醒", ""]
             for q in questions:
-                msg_lines.append(f"• {q}")
+                msg_lines.append(f"- {q}")
             msg_lines.append("")
             msg_lines.append("回复「归档 项目名」或「继续 项目名」来决定")
             send_feishu_message("\n".join(msg_lines), tag="reorganize")
