@@ -118,6 +118,18 @@ clawd             # enter secretary mode
 
 On first launch the secretary will guide you through onboarding via conversation, filling in your profile automatically. You can also skip the guided setup and manually edit `shared-wiki/boss-profile.md`.
 
+### 4. Try it out
+
+After onboarding, try a few commands to see it in action:
+
+```
+"standup"          → secretary reports what you've been doing
+"import history"   → import past Claude Code sessions into the wiki
+"graph"            → generate a knowledge graph, opens in browser
+```
+
+After a few days of use, try **"weekly"** and **"reflect X"** — they work better once the wiki has some content.
+
 ### Optional: Global hotkey ⌃⌥C (macOS, manual GUI)
 
 Want one-key capture from any app? Set up a shortcut in Shortcuts.app:
