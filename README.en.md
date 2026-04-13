@@ -2,6 +2,7 @@
 
 [![syntax](https://github.com/Amb2rZhou/intern-clawd/actions/workflows/syntax.yml/badge.svg)](https://github.com/Amb2rZhou/intern-clawd/actions/workflows/syntax.yml)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![version](https://img.shields.io/badge/version-0.2.0-green.svg)](CHANGELOG.md)
 
 [中文](README.md) | **English**
 
@@ -19,12 +20,12 @@ This is **not yet another LLM wiki**. It's a complete secretary operating system
 |---|---|---|---|---|
 | Dual domains (work / life) | ✅ | ❌ single wiki | ❌ generic memory | ❌ single vault |
 | Role-based rituals (standup/weekly/reflect) | ✅ 7 fixed commands | ❌ | ❌ | ❌ |
-| Multi-channel capture | ✅ 5+ entry points | ❌ single entry | ❌ API only | ⚠️ Obsidian only |
+| Multi-channel capture | ✅ terminal + hotkey + IM | ❌ single entry | ❌ API only | ⚠️ Obsidian only |
 | Session routing hooks | ✅ auto-archives JSONLs | ❌ | ❌ | ❌ |
 | Install | ✅ clone to `~/.clawd`, zero servers | ⚠️ needs backend | ⚠️ needs backend / DB | ✅ but bound to Obsidian |
 | Self-maintenance (lint + monthly job) | ✅ | ⚠️ partial | ❌ | ❌ |
 
-**Core difference**: others build "knowledge base + LLM." We build "**a secretary with a persona + 7 rituals + 5 capture channels**." The wiki is the secretary's notebook, not the product itself.
+**Core difference**: others build "knowledge base + LLM." We build "**a secretary with a persona + ritual system + multi-channel capture**." The wiki is the secretary's notebook, not the product itself.
 
 ---
 
@@ -145,7 +146,7 @@ This is purely optional — core functionality works without it. See [`setup-new
 
 ---
 
-## Usage (the 8 you'll actually use)
+## Usage (the 10 you'll actually use)
 
 | # | Trigger | When |
 |---|---|---|
@@ -170,11 +171,14 @@ The Chinese keywords (站会/周会/复盘/处理 inbox/归档/继续/检查/导
 .
 ├── CLAUDE.md                  # Secretary persona + rules (auto-loaded by CC when cwd is .clawd)
 ├── schema.md                  # Global schema (agent behavior constraints)
-├── README.md                  # Chinese README
+├── README.md / README.en.md   # Chinese / English README
+├── CHANGELOG.md               # Version changelog
+├── RISKS.md                   # Known risks + self-check checklist
 ├── cheatsheet.md              # All commands at a glance
 ├── setup-new-machine.md       # Full migration / install guide (with known-issue cheatsheet)
 │
-├── setup.sh                   # One-shot initializer
+├── setup.sh                   # One-shot initializer (9 automated steps)
+├── uninstall.sh               # One-shot uninstaller (with restore.sh rollback)
 ├── claude-wrapper.sh          # Secretary wrapper (hard-routes ritual commands)
 ├── collect.sh                 # Clipboard → inbox capture
 ├── extract-session.py         # SessionEnd: extract conversations to raw/sessions/

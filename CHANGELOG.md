@@ -9,6 +9,48 @@ versioning follows [SemVer](https://semver.org/spec/v2.0.0.html).
 
 (none yet)
 
+## [0.2.0] — 2026-04-13
+
+Major usability release: installation down from ~30 min to ~3 min, Claude-guided
+onboarding, historical session import, wiki relationship graph, English README,
+CI pipeline, and full independence from external dependencies.
+
+### Added
+- **One-shot setup automation** — `setup.sh` expanded from 6 to 9 steps:
+  now auto-copies hooks to `~/.claude/hooks/`, injects hook config into
+  `settings.json` via Python3 JSON merge (no overwrite), and adds `clawd` /
+  `inbox` aliases to `~/.zshrc`
+- **Claude-guided onboarding** — on first launch, the secretary detects
+  unfilled `boss-profile.md` placeholders and walks the user through setup
+  via conversation (name, role, language, style, projects, red lines)
+- **`import-history.py`** — scan, extract, and classify historical Claude Code
+  sessions into the wiki. Includes `--scan` (report only), `--extract`,
+  `--snapshot` (tar.gz backup + auto-generated `rollback-import.sh`)
+- **`wiki-graph.py`** — generates a standalone HTML page with a d3.js
+  force-directed graph of wiki pages, links, and tags. Dark theme, color-coded
+  by domain (work=blue, life=green, shared=gray)
+- **English README** (`README.en.md`) with language switcher in both versions
+- **CI syntax check** — GitHub Actions workflow (`syntax.yml`) + badges
+- **Mobile IM connection guide** — generic two-step pattern for connecting
+  any IM bot (Telegram, Discord, Slack, etc.) via `claude-wrapper.sh`
+
+### Changed
+- **Quick Start reduced to 2 commands** (was 4) — `clone + setup.sh + clawd`
+  on a single line
+- **Install steps reduced from 5 to 3** — Shortcuts.app demoted to optional
+- **Usage table expanded** from 8 to 10 commands (added 导入历史 / 关系图)
+- **IM references generalized** — replaced all Feishu/WeChat-specific language
+  with platform-agnostic descriptions; Feishu code kept as reference impl
+- **`permission-router.sh` simplified** — now pure terminal detection,
+  no external HTTP forwarding
+
+### Removed
+- All references to external dependencies that are not part of this project
+
+### Fixed
+- Broken empty GitHub links in README 致谢 section
+- Missing file structure section in English README
+
 ## [0.1.0] — 2026-04-10
 
 First public release. Personal Secretary OS for Claude Code, built on top of
@@ -21,8 +63,8 @@ and multi-channel capture.
   index, log, projects, and reflections
 - **7 secretary rituals** — 站会 / 周会 / 复盘 / 处理 inbox / 归档 / 继续 / lint,
   routed via natural language
-- **5 capture entries** — `⌃⌥C` global hotkey, `clawd` and `inbox` zsh aliases,
-  Feishu/WeChat IM bridges (optional), terminal `clawd` command
+- **Multiple capture entries** — `⌃⌥C` global hotkey, `clawd` and `inbox`
+  zsh aliases, mobile IM channel (optional), terminal `clawd` command
 - **Claude Code hook integration**
   - `inject-wiki-context.sh` — SessionStart hook injecting current wiki state
     into the secretary's system prompt
@@ -39,8 +81,8 @@ and multi-channel capture.
 - **`RISKS.md`** — explicit, honest catalog of A/B/C tier known issues —
   what is fixed, what is mitigated, what is intentionally left unfixed,
   plus a pre-install self-check checklist
-- **Quick Start section** in README — 4 commands to see the minimum viable
-  secretary, separate from the full install path
+- **Quick Start section** in README — minimal commands to see the secretary
+  in action, separate from the full install path
 - **Wiki maintenance scripts** — `wiki-lint.py`, `wiki-maintenance.py`,
   `reorganize-index.py`, `weekly-report.py`, `monthly-review.py`
 - **Path parameterization** — every script honors `$CLAWD_DIR` and
@@ -58,5 +100,6 @@ and multi-channel capture.
 - [Claude Code](https://docs.claude.com/claude-code) for the hook system,
   CLAUDE.md injection mechanism, and SessionStart/SessionEnd lifecycle
 
-[Unreleased]: https://github.com/Amb2rZhou/intern-clawd/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/Amb2rZhou/intern-clawd/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/Amb2rZhou/intern-clawd/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Amb2rZhou/intern-clawd/releases/tag/v0.1.0

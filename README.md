@@ -2,6 +2,7 @@
 
 [![syntax](https://github.com/Amb2rZhou/intern-clawd/actions/workflows/syntax.yml/badge.svg)](https://github.com/Amb2rZhou/intern-clawd/actions/workflows/syntax.yml)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![version](https://img.shields.io/badge/version-0.2.0-green.svg)](CHANGELOG.md)
 
 **中文** | [English](README.en.md)
 
@@ -19,12 +20,12 @@
 |---|---|---|---|---|
 | 双域（work / life） | ✅ | ❌ 单一 wiki | ❌ 通用记忆 | ❌ 单 vault |
 | 角色化 ritual（站会/周会/复盘） | ✅ 7 个固定命令 | ❌ | ❌ | ❌ |
-| 多入口 capture | ✅ 5+ 渠道 | ❌ 单入口 | ❌ API only | ⚠️ Obsidian only |
+| 多入口 capture | ✅ 终端 + 快捷键 + IM | ❌ 单入口 | ❌ API only | ⚠️ Obsidian only |
 | Session 路由 hooks | ✅ 自动归档 jsonl | ❌ | ❌ | ❌ |
 | 安装方式 | ✅ clone 到 `~/.clawd`，零服务器 | ⚠️ 需后端服务 | ⚠️ 需后端 / DB | ✅ 但绑定 Obsidian |
 | 自维护（lint + 月度 maintenance） | ✅ | ⚠️ 部分 | ❌ | ❌ |
 
-**核心差异**：别人在做「知识库 + LLM」，我们在做「**有人格的秘书 + 7 个仪式 + 5 个入口**」。Wiki 是这个秘书的笔记本，不是产品本身。
+**核心差异**：别人在做「知识库 + LLM」，我们在做「**有人格的秘书 + 仪式系统 + 多渠道 capture**」。Wiki 是这个秘书的笔记本，不是产品本身。
 
 ---
 
@@ -145,7 +146,7 @@ clawd             # 进入秘书模式
 
 ---
 
-## 用法（高频 8 个）
+## 用法（高频 10 个）
 
 | # | 触发 | 场景 |
 |---|---|---|
@@ -170,11 +171,14 @@ clawd             # 进入秘书模式
 .
 ├── CLAUDE.md                  # 秘书人格 + 规则（cwd 在 .clawd 时 Claude Code 自动加载）
 ├── schema.md                  # 全局 schema（agent 行为约束）
-├── README.md                  # 本文件
+├── README.md / README.en.md   # 中英文 README
+├── CHANGELOG.md               # 版本变更记录
+├── RISKS.md                   # 已知风险 + 自检清单
 ├── cheatsheet.md              # 快捷命令大全
 ├── setup-new-machine.md       # 完整迁移/安装手册（含已知坑速查）
 │
-├── setup.sh                   # 一键初始化
+├── setup.sh                   # 一键初始化（9 步全自动）
+├── uninstall.sh               # 一键卸载（带 restore.sh 回退）
 ├── claude-wrapper.sh          # 秘书 wrapper（特殊命令硬路由）
 ├── collect.sh                 # 剪贴板 → inbox 收集
 ├── extract-session.py         # SessionEnd: 提取对话到 raw/sessions/
