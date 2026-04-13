@@ -23,7 +23,7 @@ This is **not yet another LLM wiki**. It's a complete secretary operating system
 | Runtime | Pure files, zero services | Node.js long-running service | Built-in |
 | Knowledge persistence | ✅ Dual-domain wiki (work / life), three-layer architecture | ⚠️ Skill files + conversation memory | ⚠️ Flat auto-memory notes |
 | Persona + rituals | ✅ Secretary persona + standup / weekly / reflect… | ⚠️ Skill system (user-defined) | ❌ Manual prompting each time |
-| Multi-channel capture | ✅ Terminal + hotkey + IM (optional) | ✅ WhatsApp / Telegram / Discord… | ❌ Terminal only |
+| Multi-channel capture | ✅ Terminal + hotkey + IM (optional) | ✅ Terminal + IM | ✅ Terminal + IM (DIY) |
 | Session routing | ✅ Auto-archives JSONLs by project | ❌ | ❌ Piles up by cwd |
 | Self-maintenance | ✅ Lint + monthly maintenance + tiered index | ❌ | ❌ |
 | Dependencies | Python 3 + Claude Code | Node 22+, runs standalone | None |
