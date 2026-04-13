@@ -278,7 +278,6 @@ bash uninstall.sh
 
 下面这些是 **clawd 友好但独立** 的项目，不强依赖：
 
-- **Mr. Krabs.app** — 桌面 bubble，权限审批 + 通知
 - **Claude-to-IM bridge** — 手机渠道（飞书 / 微信）
 
 按需自行集成。

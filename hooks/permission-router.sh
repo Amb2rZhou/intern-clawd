@@ -1,6 +1,6 @@
 #!/bin/bash
-# 智能权限路由：终端前台 → 终端内审批，否则 → Mr. Krabs bubble
-# 替代原来的 HTTP hook，改用 command hook + 条件转发
+# 智能权限路由：终端前台 → 终端内审批，否则 → 静默放行
+# PermissionRequest hook，可选安装
 
 INPUT=$(cat)
 
@@ -14,21 +14,6 @@ case "$FRONT_APP" in
     ;;
 esac
 
-# 不在终端 → 转发给 Mr. Krabs bubble
-# --connect-timeout 2 让"Mr. Krabs 没启动"场景秒退（而不是等 600s 超时）
-RESPONSE=$(echo "$INPUT" | /usr/bin/curl -s -X POST http://127.0.0.1:23333/permission \
-  -H "Content-Type: application/json" \
-  -d @- \
-  --connect-timeout 2 \
-  --max-time 600 2>/dev/null)
-CURL_RC=$?
-
-if [ $CURL_RC -ne 0 ]; then
-  # Mr. Krabs HTTP 不可达 → 静默退出 0，让 Claude Code 走默认 prompt 流程
-  echo "[permission-router] Mr. Krabs HTTP 23333 unreachable (curl exit $CURL_RC), falling through to default prompt" >&2
-  exit 0
-fi
-
-if [ -n "$RESPONSE" ]; then
-  echo "$RESPONSE"
-fi
+# 不在终端 → 静默放���，让 Claude Code 走默认 prompt 流程
+# 如果你有桌面审批 app，可以在这里加 HTTP 转发
+exit 0

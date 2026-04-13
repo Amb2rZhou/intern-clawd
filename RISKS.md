@@ -39,10 +39,10 @@ intern-clawd 改装 Claude Code 的同时，也会动你机器上的几个全局
 
 ### A5. `permission-router.sh` 默认无超时（如果你装它）
 
-如果你 opt-in 装了 PermissionRequest hook 但上游 Mr. Krabs 服务没起，curl 会卡 600s。
+如果你 opt-in 装了 PermissionRequest hook 并自行添加了 HTTP 转发到外部审批服务，但服务没起，curl 会卡住。
 
 - 没修：`permission-router.sh` 是可选的，setup.sh 默认**不**装它
-- 装的话请参考 `setup-new-machine.md` §5 的已知坑表，自行加 `--connect-timeout 2`
+- 默认行为是检测终端前��则终端内审批，否则静默放行
 
 ---
 
@@ -104,7 +104,7 @@ SessionStart hook 注入 wiki index，增加 prompt 输入。
 |---|---|
 | C1 | `setup.sh` 没有 `--dry-run`，跑了就开始改 |
 | C2 | macOS Shortcuts.app 全局快捷键这一段全靠手册（无法自动化，Apple 不开放） |
-| C3 | README 说"Linux 已支持"，但 `⌃⌥C` 全局快捷键、Mr. Krabs 桌面 bubble 都是 macOS-only |
+| C3 | README 说"Linux 已支持"，但 `⌃⌥C` 全局快捷键是 macOS-only |
 | C4 | 没有 "tested against Claude Code version X.Y" 标注 |
 
 ---
@@ -128,7 +128,6 @@ bash uninstall.sh
 不会自动碰：
 - macOS Shortcuts.app 里的 ⌃⌥C 快捷指令（Apple API 不开放，自己删）
 - `~/.claude-to-im/`（独立项目，按它自己 README 卸）
-- Mr. Krabs.app（独立 app，从 Applications 拖走）
 
 反悔了：
 

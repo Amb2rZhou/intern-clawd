@@ -5,11 +5,11 @@
 ## 架构概览
 
 ```
-Mr. Krabs（秘书 + 路由）
-  ├── work/      工作域 agent
-  ├── life/      生活域 agent
+秘书 Agent（���由 + 管理）
+  ├── work/      工作域
+  ├── life/      生活域
   └── side-projects/{name}/  按需扩展
-共享层: shared-wiki/（跨域知识，Mr. Krabs 维护）
+共享层: shared-wiki/（跨域知识，秘书维护）
 ```
 
 ## 三层架构（Karpathy LLM Wiki 模式）
@@ -146,7 +146,7 @@ operation 类型：
 - 个人成长相关的洞察（不论来源于工作还是生活）
 - 通用工具/工作流的改进
 
-同步方式：在源域 log.md 标记 `[sync → shared]`，由 Mr. Krabs 负责实际同步。
+同步方式：在源域 log.md 标记 `[sync → shared]`，由秘书在跨域任务时负责实际同步。
 
 ## Post-Write 自动验证（反馈回路）
 
@@ -169,7 +169,7 @@ log_op("ingest", domain="work", pages_touched=3, source="terminal")
 
 字段：ts, op, domain, pages, status, source, detail
 op 类型：ingest / query / lint / maintenance / collect / process
-source 类型：terminal / feishu / wechat / mrkrabs / cron / shortcut
+source 类型：terminal / feishu / wechat / cron / shortcut
 
 ## 跨 Session 状态接力（Progress File）
 

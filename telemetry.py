@@ -18,7 +18,7 @@ def log_op(op, domain="unknown", pages_touched=0, status="ok", detail="", source
         pages_touched: 影响的页面数
         status: ok/error/timeout
         detail: 补充信息
-        source: 来源渠道 (terminal/feishu/wechat/mrkrabs/cron)
+        source: 来源渠道 (terminal/feishu/wechat/cron/shortcut)
     """
     entry = {
         "ts": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),

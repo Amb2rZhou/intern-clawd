@@ -61,7 +61,7 @@ alias cti="bash ~/.agents/skills/claude-to-im/scripts/daemon.sh"  # claude-to-im
 
 `setup.sh` 不动 hooks，需要手动配置。
 
-### 3.1 SessionEnd: 路由 + 转写 + Mr. Krabs
+### 3.1 SessionEnd: 路由 + 转写
 
 `~/.claude/hooks/` 下需要这两个文件：
 
@@ -94,9 +94,7 @@ ls ~/.claude/hooks/
 }
 ```
 
-如果用 Mr. Krabs，再加它的 `clawd-hook.js` 各事件 entry（参考旧机 settings.json 全文）。
-
-**注意**：PermissionRequest 只留**一条**（router），不要重复挂直接 HTTP entry，否则 Mr. Krabs 没启时会 600s 超时。
+**注意**：PermissionRequest hook 是可选的。如果装了，默认行为是终端前台走终端内审批，否则静默放行。
 
 ---
 
@@ -184,5 +182,4 @@ crontab -l | grep reorganize-index   # 应该看到 9:07 AM 那行
 
 ## 7. 不在这份文档里的东西
 
-- **Mr. Krabs.app**：第三方桌面 app，独立安装。如果用就装，不用就把 settings.json 里相关条目都删掉。
 - **Claude-to-IM bridge**：手机渠道（飞书/微信），在 `~/.claude-to-im/`，独立项目，按它自己的 README 装。

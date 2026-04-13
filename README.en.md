@@ -265,7 +265,6 @@ See [`RISKS.md`](RISKS.md) "How to undo" section for details.
 
 These are **clawd-friendly but independent** projects, not hard dependencies:
 
-- **Mr. Krabs.app** — desktop bubble, permission approvals + notifications
 - **Claude-to-IM bridge** — mobile channel (Feishu / WeChat)
 
 Integrate as you see fit.
