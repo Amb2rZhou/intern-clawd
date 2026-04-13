@@ -8,29 +8,9 @@
 
 把 Claude Code 从「每次失忆的编程工具」改造成「有记忆、陪你成长的私人秘书」。
 
-不是又一个 LLM wiki，是一个**完整的秘书操作系统**：知识库只是其中一个器官。
+基于 **Andrej Karpathy** 的 [LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) 三层架构（raw / wiki / schema），记忆是**动态的、自维护的**——秘书自己整理 wiki、检查健康、按活跃度分层索引，用得越多越聪明。
 
 > **clawd** = **Claude** + **wd** (working directory)。一个驻留在 `~/.clawd/` 的秘书 agent，管理你的工作 / 生活两个域的知识库，覆盖从「想到 → 捕获 → 消化 → 检索 → 复盘」全链路。
-
----
-
-## 跟同类产品的差异
-
-| | intern-clawd | OpenClaw | 裸 Claude Code |
-|---|---|---|---|
-| 定位 | Claude Code 上的私人秘书 | 自托管 AI agent（多 IM 接入） | 通用编程助手 |
-| 费用 | $0（随 Claude Code 订阅走） | API 按量付费（Opus 4.6: $15/$75 per MTok） | $20/mo Max 或 $100/mo Pro |
-| 运行方式 | 纯文件，零服务 | Node.js 常驻服务 | 内置 |
-| 知识持久化 | ✅ 双域 wiki（work / life），三层架构 | ⚠️ skill 文件 + 对话记忆 | ⚠️ auto-memory 扁平笔记 |
-| 角色 + 仪式 | ✅ 秘书人格 + 站会/周会/复盘… | ⚠️ skill 系统（自由定义） | ❌ 每次需手动 prompt |
-| 多渠道 capture | ✅ 终端 + 快捷键 + IM（可选） | ✅ 终端 + IM | ✅ 终端 + IM（需自建） |
-| Session 路由 | ✅ 自动按项目归档 jsonl | ❌ | ❌ 按 cwd 堆积 |
-| 自维护 | ✅ lint + 月度维护 + 分层 index | ❌ | ❌ |
-| 依赖 | Python 3 + Claude Code | Node 22+，独立运行 | 无 |
-| 安装 | `clone + setup.sh`（3 分钟） | 一键脚本（需 Node） | 内置 |
-| 卸载 | ✅ `uninstall.sh` + 回退脚本 | ✅ | — |
-
-**怎么选**：想在手机上跟 AI 聊天 → OpenClaw。想让 Claude Code 本身变得更聪明、有记忆、有节奏 → intern-clawd。两者也可以共存：用 OpenClaw 做 IM 通道，用 intern-clawd 管知识。
 
 ---
 
@@ -303,6 +283,26 @@ intern-clawd 的核心入口是终端，但你可以通过任何 IM 机器人连
 wrapper 会自动处理命令路由（站会、周会等触发词）和上下文注入，跟终端体验一致。
 
 本 repo 附带了飞书（Lark）的参考实现（`feishu_utils.py` / `feishu-send.sh`），可以作为接入其他 IM 的模板。
+
+---
+
+## 跟同类产品的差异
+
+| | intern-clawd | OpenClaw | 裸 Claude Code |
+|---|---|---|---|
+| 定位 | Claude Code 上的私人秘书 | 自托管 AI agent（多 IM 接入） | 通用编程助手 |
+| 费用 | $0（随 Claude Code 订阅走） | API 按量付费（Opus 4.6: $15/$75 per MTok） | $20/mo Max 或 $100/mo Pro |
+| 运行方式 | 纯文件，零服务 | Node.js 常驻服务 | 内置 |
+| 知识持久化 | ✅ 双域 wiki（work / life），三层架构 | ⚠️ skill 文件 + 对话记忆 | ⚠️ auto-memory 扁平笔记 |
+| 角色 + 仪式 | ✅ 秘书人格 + 站会/周会/复盘… | ⚠️ skill 系统（自由定义） | ❌ 每次需手动 prompt |
+| 多渠道 capture | ✅ 终端 + 快捷键 + IM（可选） | ✅ 终端 + IM | ✅ 终端 + IM（需自建） |
+| Session 路由 | ✅ 自动按项目归档 jsonl | ❌ | ❌ 按 cwd 堆积 |
+| 自维护 | ✅ lint + 月度维护 + 分层 index | ❌ | ❌ |
+| 依赖 | Python 3 + Claude Code | Node 22+，独立运行 | 无 |
+| 安装 | `clone + setup.sh`（3 分钟） | 一键脚本（需 Node） | 内置 |
+| 卸载 | ✅ `uninstall.sh` + 回退脚本 | ✅ | — |
+
+**怎么选**：想在手机上跟 AI 聊天 → OpenClaw。想让 Claude Code 本身变得更聪明、有记忆、陪你成长 → intern-clawd。两者也可以共存：用 OpenClaw 做 IM 通道，用 intern-clawd 管知识。
 
 ---
 

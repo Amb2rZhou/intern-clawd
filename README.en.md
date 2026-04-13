@@ -8,29 +8,9 @@
 
 Turn Claude Code from "an amnesiac coding tool that forgets every session" into "a personal secretary with memory that grows with you."
 
-This is **not yet another LLM wiki**. It's a complete secretary operating system — the knowledge base is just one of its organs.
+Built on **Andrej Karpathy**'s [LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) three-layer architecture (raw / wiki / schema). The memory is **dynamic and self-maintaining** — the secretary organizes its own wiki, runs health checks, and tiers its index by activity. The more you use it, the smarter it gets.
 
 > **clawd** = **Claude** + **wd** (working directory). A secretary agent living in `~/.clawd/` that manages two domains of your knowledge (work and life), covering the full loop: capture → digest → retrieve → reflect.
-
----
-
-## How it differs from similar products
-
-| | intern-clawd | OpenClaw | Vanilla Claude Code |
-|---|---|---|---|
-| Purpose | Personal secretary on top of Claude Code | Self-hosted AI agent (multi-IM access) | General coding assistant |
-| Cost | $0 (runs on your Claude Code subscription) | API pay-per-use (Opus 4.6: $15/$75 per MTok) | $20/mo Max or $100/mo Pro |
-| Runtime | Pure files, zero services | Node.js long-running service | Built-in |
-| Knowledge persistence | ✅ Dual-domain wiki (work / life), three-layer architecture | ⚠️ Skill files + conversation memory | ⚠️ Flat auto-memory notes |
-| Persona + rituals | ✅ Secretary persona + standup / weekly / reflect… | ⚠️ Skill system (user-defined) | ❌ Manual prompting each time |
-| Multi-channel capture | ✅ Terminal + hotkey + IM (optional) | ✅ Terminal + IM | ✅ Terminal + IM (DIY) |
-| Session routing | ✅ Auto-archives JSONLs by project | ❌ | ❌ Piles up by cwd |
-| Self-maintenance | ✅ Lint + monthly maintenance + tiered index | ❌ | ❌ |
-| Dependencies | Python 3 + Claude Code | Node 22+, runs standalone | None |
-| Install | `clone + setup.sh` (3 min) | One-liner script (needs Node) | Built-in |
-| Uninstall | ✅ `uninstall.sh` + rollback script | ✅ | — |
-
-**How to choose**: Want to chat with AI on your phone → OpenClaw. Want Claude Code itself to be smarter, with memory and rhythm → intern-clawd. They can coexist: use OpenClaw as the IM channel, use intern-clawd to manage knowledge.
 
 ---
 
@@ -290,6 +270,26 @@ Phone message → IM Bot → call ~/.clawd/claude-wrapper.sh -p "message" → re
 The wrapper handles command routing (standup, weekly, etc.) and context injection automatically — same experience as the terminal.
 
 This repo includes a Feishu (Lark) reference implementation (`feishu_utils.py` / `feishu-send.sh`) that you can use as a template for other platforms.
+
+---
+
+## How it differs from similar products
+
+| | intern-clawd | OpenClaw | Vanilla Claude Code |
+|---|---|---|---|
+| Purpose | Personal secretary on top of Claude Code | Self-hosted AI agent (multi-IM access) | General coding assistant |
+| Cost | $0 (runs on your Claude Code subscription) | API pay-per-use (Opus 4.6: $15/$75 per MTok) | $20/mo Max or $100/mo Pro |
+| Runtime | Pure files, zero services | Node.js long-running service | Built-in |
+| Knowledge persistence | ✅ Dual-domain wiki (work / life), three-layer architecture | ⚠️ Skill files + conversation memory | ⚠️ Flat auto-memory notes |
+| Persona + rituals | ✅ Secretary persona + standup / weekly / reflect… | ⚠️ Skill system (user-defined) | ❌ Manual prompting each time |
+| Multi-channel capture | ✅ Terminal + hotkey + IM (optional) | ✅ Terminal + IM | ✅ Terminal + IM (DIY) |
+| Session routing | ✅ Auto-archives JSONLs by project | ❌ | ❌ Piles up by cwd |
+| Self-maintenance | ✅ Lint + monthly maintenance + tiered index | ❌ | ❌ |
+| Dependencies | Python 3 + Claude Code | Node 22+, runs standalone | None |
+| Install | `clone + setup.sh` (3 min) | One-liner script (needs Node) | Built-in |
+| Uninstall | ✅ `uninstall.sh` + rollback script | ✅ | — |
+
+**How to choose**: Want to chat with AI on your phone → OpenClaw. Want Claude Code itself to be smarter, with memory that grows with you → intern-clawd. They can coexist: use OpenClaw as the IM channel, use intern-clawd to manage knowledge.
 
 ---
 
