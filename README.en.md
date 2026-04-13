@@ -14,20 +14,22 @@ This is **not yet another LLM wiki**. It's a complete secretary operating system
 
 ---
 
-## How it differs from similar projects
+## How it differs from similar products
 
-| | intern-clawd | SuperClaude<br>(22K★) | claude-mem<br>(51K★) | Vanilla Claude Code |
-|---|---|---|---|---|
-| Core purpose | Personal secretary + knowledge base | Dev workflow + agent personas | Automatic memory capture | General coding assistant |
-| Knowledge structure | ✅ Dual-domain wiki (work / life) | ❌ Single KNOWLEDGE.md | ❌ SQLite + vector DB | ❌ Flat auto-memory notes |
-| Role-based rituals | ✅ Standup / weekly / reflect / archive… | ⚠️ 30 slash commands (dev-focused) | ❌ | ❌ |
-| Multi-channel capture | ✅ Terminal + hotkey + IM | ❌ | ⚠️ Auto hook capture | ❌ |
-| Session routing | ✅ Auto-archives JSONLs by project | ❌ | ❌ | ❌ |
-| Self-maintenance | ✅ Lint + monthly + tiered index | ⚠️ ReflexionMemory | ❌ | ⚠️ Auto-memory |
-| Install | `clone + setup.sh` (3 min) | `pipx install` (1 min) | `npx install` (1 min) | Built-in |
-| Clean uninstall | ✅ `uninstall.sh` + rollback script | ✅ | ✅ | — |
+| | intern-clawd | OpenClaw | Vanilla Claude Code |
+|---|---|---|---|
+| Purpose | Personal secretary on top of Claude Code | Self-hosted AI agent (multi-IM access) | General coding assistant |
+| Runtime | Pure files, zero services | Node.js long-running service | Built-in |
+| Knowledge persistence | ✅ Dual-domain wiki (work / life), three-layer architecture | ⚠️ Skill files + conversation memory | ⚠️ Flat auto-memory notes |
+| Persona + rituals | ✅ Secretary persona + standup / weekly / reflect… | ⚠️ Skill system (user-defined) | ❌ Manual prompting each time |
+| Multi-channel capture | ✅ Terminal + hotkey + IM (optional) | ✅ WhatsApp / Telegram / Discord… | ❌ Terminal only |
+| Session routing | ✅ Auto-archives JSONLs by project | ❌ | ❌ Piles up by cwd |
+| Self-maintenance | ✅ Lint + monthly maintenance + tiered index | ❌ | ❌ |
+| Dependencies | Python 3 + Claude Code | Node 22+, runs standalone | None |
+| Install | `clone + setup.sh` (3 min) | One-liner script (needs Node) | Built-in |
+| Uninstall | ✅ `uninstall.sh` + rollback script | ✅ | — |
 
-**Core difference**: SuperClaude makes you code faster. claude-mem auto-remembers everything. intern-clawd gives you **a secretary with a persona, rituals, and cross-domain knowledge management**. They don't conflict — you can install them side by side.
+**How to choose**: Want to chat with AI on your phone → OpenClaw. Want Claude Code itself to be smarter, with memory and rhythm → intern-clawd. They can coexist: use OpenClaw as the IM channel, use intern-clawd to manage knowledge.
 
 ---
 

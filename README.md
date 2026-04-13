@@ -14,20 +14,22 @@
 
 ---
 
-## 跟同类项目的差异
+## 跟同类产品的差异
 
-| | intern-clawd | SuperClaude<br>(22K★) | claude-mem<br>(51K★) | 裸 Claude Code |
-|---|---|---|---|---|
-| 核心定位 | 私人秘书 + 知识库 | 开发工作流 + agent 人格 | 自动记忆捕获 | 通用编程助手 |
-| 知识结构 | ✅ 双域 wiki（work / life） | ❌ KNOWLEDGE.md 单文件 | ❌ SQLite + 向量库 | ❌ auto-memory 扁平笔记 |
-| 角色化 ritual | ✅ 站会/周会/复盘/归档… | ⚠️ 30 个 slash 命令（开发向） | ❌ | ❌ |
-| 多渠道 capture | ✅ 终端 + 快捷键 + IM | ❌ | ⚠️ hook 自动抓取 | ❌ |
-| Session 路由 | ✅ 自动按项目归档 jsonl | ❌ | ❌ | ❌ |
-| 自维护 | ✅ lint + 月度维护 + 分层 index | ⚠️ ReflexionMemory | ❌ | ⚠️ auto-memory |
-| 安装 | `clone + setup.sh`（3 分钟） | `pipx install`（1 分钟） | `npx install`（1 分钟） | 内置 |
-| 一键卸载 | ✅ `uninstall.sh` + 回退脚本 | ✅ | ✅ | — |
+| | intern-clawd | OpenClaw | 裸 Claude Code |
+|---|---|---|---|
+| 定位 | Claude Code 上的私人秘书 | 自托管 AI agent（多 IM 接入） | 通用编程助手 |
+| 运行方式 | 纯文件，零服务 | Node.js 常驻服务 | 内置 |
+| 知识持久化 | ✅ 双域 wiki（work / life），三层架构 | ⚠️ skill 文件 + 对话记忆 | ⚠️ auto-memory 扁平笔记 |
+| 角色 + 仪式 | ✅ 秘书人格 + 站会/周会/复盘… | ⚠️ skill 系统（自由定义） | ❌ 每次需手动 prompt |
+| 多渠道 capture | ✅ 终端 + 快捷键 + IM（可选） | ✅ WhatsApp / Telegram / Discord… | ❌ 仅终端 |
+| Session 路由 | ✅ 自动按项目归档 jsonl | ❌ | ❌ 按 cwd 堆积 |
+| 自维护 | ✅ lint + 月度维护 + 分层 index | ❌ | ❌ |
+| 依赖 | Python 3 + Claude Code | Node 22+，独立运行 | 无 |
+| 安装 | `clone + setup.sh`（3 分钟） | 一键脚本（需 Node） | 内置 |
+| 卸载 | ✅ `uninstall.sh` + 回退脚本 | ✅ | — |
 
-**核心差异**：SuperClaude 让你写代码更快，claude-mem 帮你自动记住一切，intern-clawd 给你一个**有人格、有仪式、跨域管理知识的秘书**。它们不冲突——可以同时装。
+**怎么选**：想在手机上跟 AI 聊天 → OpenClaw。想让 Claude Code 本身变得更聪明、有记忆、有节奏 → intern-clawd。两者也可以共存：用 OpenClaw 做 IM 通道，用 intern-clawd 管知识。
 
 ---
 
