@@ -16,16 +16,18 @@
 
 ## 跟同类项目的差异
 
-| | intern-clawd | LLM Wiki 工具<br>(`llm-wiki-agent` 等) | LLM 记忆框架<br>(`mem0`, `letta`) | Obsidian + LLM<br>(`obsidian-mind` 等) |
+| | intern-clawd | SuperClaude<br>(22K★) | claude-mem<br>(51K★) | 裸 Claude Code |
 |---|---|---|---|---|
-| 双域（work / life） | ✅ | ❌ 单一 wiki | ❌ 通用记忆 | ❌ 单 vault |
-| 角色化 ritual（站会/周会/复盘） | ✅ 7 个固定命令 | ❌ | ❌ | ❌ |
-| 多入口 capture | ✅ 终端 + 快捷键 + IM | ❌ 单入口 | ❌ API only | ⚠️ Obsidian only |
-| Session 路由 hooks | ✅ 自动归档 jsonl | ❌ | ❌ | ❌ |
-| 安装方式 | ✅ clone 到 `~/.clawd`，零服务器 | ⚠️ 需后端服务 | ⚠️ 需后端 / DB | ✅ 但绑定 Obsidian |
-| 自维护（lint + 月度 maintenance） | ✅ | ⚠️ 部分 | ❌ | ❌ |
+| 核心定位 | 私人秘书 + 知识库 | 开发工作流 + agent 人格 | 自动记忆捕获 | 通用编程助手 |
+| 知识结构 | ✅ 双域 wiki（work / life） | ❌ KNOWLEDGE.md 单文件 | ❌ SQLite + 向量库 | ❌ auto-memory 扁平笔记 |
+| 角色化 ritual | ✅ 站会/周会/复盘/归档… | ⚠️ 30 个 slash 命令（开发向） | ❌ | ❌ |
+| 多渠道 capture | ✅ 终端 + 快捷键 + IM | ❌ | ⚠️ hook 自动抓取 | ❌ |
+| Session 路由 | ✅ 自动按项目归档 jsonl | ❌ | ❌ | ❌ |
+| 自维护 | ✅ lint + 月度维护 + 分层 index | ⚠️ ReflexionMemory | ❌ | ⚠️ auto-memory |
+| 安装 | `clone + setup.sh`（3 分钟） | `pipx install`（1 分钟） | `npx install`（1 分钟） | 内置 |
+| 一键卸载 | ✅ `uninstall.sh` + 回退脚本 | ✅ | ✅ | — |
 
-**核心差异**：别人在做「知识库 + LLM」，我们在做「**有人格的秘书 + 仪式系统 + 多渠道 capture**」。Wiki 是这个秘书的笔记本，不是产品本身。
+**核心差异**：SuperClaude 让你写代码更快，claude-mem 帮你自动记住一切，intern-clawd 给你一个**有人格、有仪式、跨域管理知识的秘书**。它们不冲突——可以同时装。
 
 ---
 

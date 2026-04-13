@@ -16,16 +16,18 @@ This is **not yet another LLM wiki**. It's a complete secretary operating system
 
 ## How it differs from similar projects
 
-| | intern-clawd | LLM Wiki tools<br>(`llm-wiki-agent` etc.) | LLM memory frameworks<br>(`mem0`, `letta`) | Obsidian + LLM<br>(`obsidian-mind` etc.) |
+| | intern-clawd | SuperClaude<br>(22K★) | claude-mem<br>(51K★) | Vanilla Claude Code |
 |---|---|---|---|---|
-| Dual domains (work / life) | ✅ | ❌ single wiki | ❌ generic memory | ❌ single vault |
-| Role-based rituals (standup/weekly/reflect) | ✅ 7 fixed commands | ❌ | ❌ | ❌ |
-| Multi-channel capture | ✅ terminal + hotkey + IM | ❌ single entry | ❌ API only | ⚠️ Obsidian only |
-| Session routing hooks | ✅ auto-archives JSONLs | ❌ | ❌ | ❌ |
-| Install | ✅ clone to `~/.clawd`, zero servers | ⚠️ needs backend | ⚠️ needs backend / DB | ✅ but bound to Obsidian |
-| Self-maintenance (lint + monthly job) | ✅ | ⚠️ partial | ❌ | ❌ |
+| Core purpose | Personal secretary + knowledge base | Dev workflow + agent personas | Automatic memory capture | General coding assistant |
+| Knowledge structure | ✅ Dual-domain wiki (work / life) | ❌ Single KNOWLEDGE.md | ❌ SQLite + vector DB | ❌ Flat auto-memory notes |
+| Role-based rituals | ✅ Standup / weekly / reflect / archive… | ⚠️ 30 slash commands (dev-focused) | ❌ | ❌ |
+| Multi-channel capture | ✅ Terminal + hotkey + IM | ❌ | ⚠️ Auto hook capture | ❌ |
+| Session routing | ✅ Auto-archives JSONLs by project | ❌ | ❌ | ❌ |
+| Self-maintenance | ✅ Lint + monthly + tiered index | ⚠️ ReflexionMemory | ❌ | ⚠️ Auto-memory |
+| Install | `clone + setup.sh` (3 min) | `pipx install` (1 min) | `npx install` (1 min) | Built-in |
+| Clean uninstall | ✅ `uninstall.sh` + rollback script | ✅ | ✅ | — |
 
-**Core difference**: others build "knowledge base + LLM." We build "**a secretary with a persona + ritual system + multi-channel capture**." The wiki is the secretary's notebook, not the product itself.
+**Core difference**: SuperClaude makes you code faster. claude-mem auto-remembers everything. intern-clawd gives you **a secretary with a persona, rituals, and cross-domain knowledge management**. They don't conflict — you can install them side by side.
 
 ---
 
