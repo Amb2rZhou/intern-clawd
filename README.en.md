@@ -77,22 +77,18 @@ intern-clawd extends this: on top of the wiki layer it stacks **persona + ritual
 
 ---
 
-## Quick Start (5 minutes to first effect)
-
-Want to see what it does before committing to the full install? Run these 4 lines:
+## Quick Start (3 minutes)
 
 ```bash
 git clone https://github.com/Amb2rZhou/intern-clawd.git ~/.clawd
-cd ~/.clawd && bash setup.sh
-echo "I am $(whoami), trying out intern-clawd today." > shared-wiki/boss-profile.md
-claude
+cd ~/.clawd && bash setup.sh && source ~/.zshrc && clawd
 ```
 
-In the Claude session, type **`standup`** — the secretary will read `life/wiki/log.md` (currently empty), greet you, and ask where you want to start. That's the minimum viable form.
+Two commands. `setup.sh` handles all configuration automatically (hooks, settings.json, aliases, cron), then `clawd` enters secretary mode.
 
-Spend one more minute on this: select text in any app → `⌃C` → run `~/.clawd/collect.sh` in a terminal → return to the secretary session and say **`process inbox`** — it will file what you just captured into the right domain wiki.
+On first launch, the secretary detects that you haven't filled in your profile yet and **guides you through onboarding automatically** — it asks a few questions (name, role, preferences, projects, red lines) and writes the config file for you. All done via conversation, no manual file editing needed.
 
-**If you like it**, continue installing the `⌃⌥C` global hotkey, Claude Code hooks, cron jobs, etc. (sections §1–§5 below). **If not**, run `bash uninstall.sh` for a one-shot cleanup.
+Once set up, type **`standup`** to see it in action. **Don't like it?** Run `bash ~/.clawd/uninstall.sh` for a one-shot cleanup.
 
 ---
 
@@ -118,61 +114,34 @@ cd ~/.clawd
 bash setup.sh
 ```
 
-Will automatically:
-- Check dependencies
-- Create the `work/life` wiki directory skeleton
-- Inject the wiki sync rule into `~/.claude/CLAUDE.md` (with backup)
-- Set up a daily 9:07 AM cron for wiki reorganization
+Automatically (9 steps):
+- Check dependencies (python3 / git / claude CLI)
+- Create `work/life` wiki directory skeleton
+- Inject wiki sync rule into `~/.claude/CLAUDE.md` (with backup)
+- Set up daily 9:07 AM cron for wiki reorganization
+- Copy hooks to `~/.claude/hooks/`
+- Inject hook config into `~/.claude/settings.json` (smart merge, won't overwrite existing config)
+- Add `clawd` / `inbox` aliases to `~/.zshrc`
 
-### 3. Write your profile
-
-```bash
-$EDITOR shared-wiki/boss-profile.md
-```
-
-Fill in your identity, preferences, current goals, red lines — this is the only source the secretary has to learn about you.
-
-### 4. Install capture entries (manual)
-
-Detailed steps in [`setup-new-machine.md`](setup-new-machine.md). Short version:
-
-**zsh aliases** (add to `~/.zshrc`):
+### 3. Start using
 
 ```bash
-alias clawd='cd ~/.clawd && claude'
-alias inbox='~/.clawd/collect.sh'
+source ~/.zshrc   # load the aliases just added
+clawd             # enter secretary mode
 ```
 
-**Global hotkey `⌃⌥C` to capture into inbox** (macOS):
+On first launch the secretary will guide you through onboarding via conversation, filling in your profile automatically. You can also skip the guided setup and manually edit `shared-wiki/boss-profile.md`.
+
+### Optional: Global hotkey ⌃⌥C (macOS, manual GUI)
+
+Want one-key capture from any app? Set up a shortcut in Shortcuts.app:
 
 1. Open Shortcuts.app, create a new shortcut
 2. Add a "Run Shell Script" action with content: `/Users/$USER/.clawd/collect.sh` (absolute path)
 3. Add a "Show Notification" action (osascript notifications fail silently on Sequoia, you must use this)
 4. System Settings → Keyboard → Keyboard Shortcuts → Services → Shortcuts → find this entry → double-click the right side and bind `⌃⌥C`
 
-⚠️ **Do not use** `create-quick-action.sh` — it uses the Automator path, which is broken on Sequoia.
-
-### 5. Install Claude Code hooks (optional but recommended)
-
-```bash
-mkdir -p ~/.claude/hooks
-cp claude-hooks/* ~/.claude/hooks/
-```
-
-Then add to `~/.claude/settings.json`:
-
-```json
-{
-  "hooks": {
-    "SessionStart": [
-      { "hooks": [{ "type": "command", "command": "$HOME/.clawd/hooks/inject-wiki-context.sh" }] }
-    ],
-    "SessionEnd": [
-      { "hooks": [{ "type": "command", "command": "/usr/bin/python3 $HOME/.claude/hooks/session-relocate.py" }] }
-    ]
-  }
-}
-```
+This is purely optional — core functionality works without it. See [`setup-new-machine.md`](setup-new-machine.md) §4 for details.
 
 ---
 
@@ -188,8 +157,10 @@ Then add to `~/.claude/settings.json`:
 | 6 | **`reflect X`** | Project retrospective |
 | 7 | **`archive X`** | Project ended |
 | 8 | **`resume X`** | Project restarted |
+| 9 | **`import history`** | Import historical CC sessions into wiki, auto-classify |
+| 10 | **`graph`** | Generate wiki relationship graph (opens in browser) |
 
-The Chinese keywords (站会/周会/复盘/处理 inbox/归档/继续/检查) work too. See [`cheatsheet.md`](cheatsheet.md) for the full command list.
+The Chinese keywords (站会/周会/复盘/处理 inbox/归档/继续/检查/导入历史/关系图) work too. See [`cheatsheet.md`](cheatsheet.md) for the full command list.
 
 ---
 
@@ -210,6 +181,8 @@ The Chinese keywords (站会/周会/复盘/处理 inbox/归档/继续/检查) wo
 │
 ├── wiki-lint.py               # Wiki health check
 ├── wiki-maintenance.py        # Monthly full maintenance (cron)
+├── wiki-graph.py              # Relationship graph (HTML + d3.js)
+├── import-history.py          # Historical session import
 ├── reorganize-index.py        # Daily index reorganization
 ├── weekly-report.py           # Weekly report generator
 ├── monthly-review.py          # Monthly review generator

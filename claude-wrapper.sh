@@ -88,9 +88,54 @@ if grep -qiE "^(inbox|处理inbox|处理收集)$" <<< "$USER_MSG"; then
     exec "$CLAWD_DIR/collect.sh" --process
 fi
 
+# 导入历史
+if grep -qiE "^(导入历史|import.?history)$" <<< "$USER_MSG"; then
+    # Phase 1: 扫描（不需要 LLM）
+    SCAN_RESULT=$(/usr/bin/python3 "$CLAWD_DIR/import-history.py" --scan 2>&1)
+    exec "$REAL_CLAUDE" -p "用户想导入历史 Claude Code session 到 wiki 系统。
+
+Phase 1 扫描结果:
+$SCAN_RESULT
+
+请按以下流程引导用户：
+
+1. **展示扫描结果**，用表格展示按项目分布的 session 数量
+2. **解释利弊**：
+   好处:
+   - 从历史对话中自动提取知识，一步建起完整知识库
+   - 发现跨 session 的模式和关联（关系图直观展示）
+   - 新 session 开始时秘书能引用历史上下文
+   弊端:
+   - Phase 2（分类归档）会消耗当前 session 的 token 额度
+   - 自动分类可能不完全准确，需要后续人工检查
+   - 历史 session 内容较多时处理时间较长
+   安全网:
+   - 开始前会自动备份当前 wiki 到 \`~/.clawd/backups/\`
+   - 不满意可以一键回退: \`bash ~/.clawd/rollback-import.sh\`
+3. **让用户选择**：
+   a. 全部导入
+   b. 只导入最近 N 天的
+   c. 只导入某个项目的
+   d. 先看看，不导入
+4. 用户确认后，**先运行备份**: \`python3 $CLAWD_DIR/import-history.py --snapshot\`
+5. 然后运行 \`python3 $CLAWD_DIR/import-history.py --extract\` 提取
+6. 读取 \`$CLAWD_DIR/raw/import-manifest.json\` 和提取出的 session 文件
+7. 逐个分类（work/life），为重要 session 创建 wiki 条目或 log 记录
+8. 全部完成后运行 \`python3 $CLAWD_DIR/wiki-graph.py\` 生成关系图并在浏览器打开
+9. 总结本次导入，提醒：不满意可以跑 \`bash ~/.clawd/rollback-import.sh\` 回退
+
+中文回复，建议性表达。" --allowedTools "Read,Edit,Write,Bash,Glob,Grep" --max-turns 30 --output-format text
+fi
+
 # lint
 if grep -qiE "^(lint|检查)$" <<< "$USER_MSG"; then
     exec "$REAL_CLAUDE" --append-system-prompt "执行 wiki 健康检查：检查 $CLAWD_DIR/work/wiki/ 和 $CLAWD_DIR/life/wiki/ 的 index.md 与实际文件是否一致，检查孤立页面、空页面、死链。输出报告。" "$@"
+fi
+
+# 关系图
+if grep -qiE "^(关系图|graph)$" <<< "$USER_MSG"; then
+    /usr/bin/python3 "$CLAWD_DIR/wiki-graph.py"
+    exit $?
 fi
 
 # === 主 Agent（秘书） ===

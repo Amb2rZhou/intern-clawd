@@ -42,6 +42,11 @@ raw/**
 # Keep .gitkeep markers
 !**/.gitkeep
 
+# Generated at runtime
+backups/
+wiki-graph.html
+rollback-import.sh
+
 # Claude session temp files
 .codepilot-uploads/
 session-summaries/

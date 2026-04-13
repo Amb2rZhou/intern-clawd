@@ -150,7 +150,8 @@ with open(path, encoding="utf-8") as f:
 keep = [l for l in lines if not (
     "alias clawd=" in l or
     "alias inbox=" in l or
-    ".clawd/collect.sh" in l
+    ".clawd/collect.sh" in l or
+    l.strip() == "# intern-clawd"
 )]
 with open(path, "w", encoding="utf-8") as f:
     f.writelines(keep)
