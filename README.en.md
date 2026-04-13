@@ -193,6 +193,70 @@ The Chinese keywords (站会/周会/复盘/处理 inbox/归档/继续/检查) wo
 
 ---
 
+## File structure
+
+```
+.
+├── CLAUDE.md                  # Secretary persona + rules (auto-loaded by CC when cwd is .clawd)
+├── schema.md                  # Global schema (agent behavior constraints)
+├── README.md                  # Chinese README
+├── cheatsheet.md              # All commands at a glance
+├── setup-new-machine.md       # Full migration / install guide (with known-issue cheatsheet)
+│
+├── setup.sh                   # One-shot initializer
+├── claude-wrapper.sh          # Secretary wrapper (hard-routes ritual commands)
+├── collect.sh                 # Clipboard → inbox capture
+├── extract-session.py         # SessionEnd: extract conversations to raw/sessions/
+│
+├── wiki-lint.py               # Wiki health check
+├── wiki-maintenance.py        # Monthly full maintenance (cron)
+├── reorganize-index.py        # Daily index reorganization
+├── weekly-report.py           # Weekly report generator
+├── monthly-review.py          # Monthly review generator
+├── telemetry.py               # Operation log (jsonl)
+│
+├── feishu_utils.py            # Feishu/Lark API (optional)
+├── feishu-send.sh             # Feishu/Lark sender (optional)
+├── config.env.example         # Claude-to-IM bridge config template (optional)
+│
+├── hooks/
+│   ├── inject-wiki-context.sh # SessionStart hook (cwd-gated)
+│   └── permission-router.sh   # PermissionRequest smart router
+│
+├── claude-hooks/              # Installed to ~/.claude/hooks/
+│   ├── mark-session-project.sh
+│   └── session-relocate.py
+│
+├── work/
+│   ├── schema.md
+│   ├── wiki/
+│   │   ├── index.md           # Work domain index
+│   │   ├── log.md             # Work timeline
+│   │   ├── projects/
+│   │   ├── people/
+│   │   ├── decisions/
+│   │   └── patterns/
+│   └── raw/                   # Immutable sources
+│
+├── life/
+│   ├── schema.md
+│   ├── wiki/
+│   │   ├── index.md
+│   │   ├── log.md
+│   │   ├── projects/
+│   │   ├── topics/
+│   │   ├── reflections/
+│   │   └── patterns/
+│   └── raw/
+│
+└── shared-wiki/
+    ├── index.md
+    ├── boss-profile.md        # ⭐ Must fill on first install
+    └── coding-style.md
+```
+
+---
+
 ## Risks & Uninstall
 
 Installing this touches several global files on your machine (`~/.claude/CLAUDE.md`, `settings.json`, `crontab`, `~/.zshrc`). **Read [`RISKS.md`](RISKS.md) before installing** — it lists every known risk, scope of impact, mitigation, and the things the author explicitly says are "not fixed."

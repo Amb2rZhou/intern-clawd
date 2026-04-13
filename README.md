@@ -316,7 +316,7 @@ bash uninstall.sh
 
 - **[Andrej Karpathy](https://karpathy.ai/)** — [LLM Wiki 三层架构](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)（raw / wiki / schema）。intern-clawd 知识层完全建立在这个模式之上。
 - **[Claude Code](https://docs.claude.com/claude-code)** — 整套 hook 系统、CLAUDE.md 注入机制、SessionStart/SessionEnd 生命周期的基石。
-- 同类项目调研：[`llm-wiki-agent`](https://github.com/) 和 [`obsidian-mind`](https://github.com/) 把 Karpathy 的想法做成了纯 wiki 工具。intern-clawd 的差异是在 wiki 层之上加了**人格 + 仪式 + 多入口**，做成秘书而不是档案柜。
+- 同类项目调研：`llm-wiki-agent` 和 `obsidian-mind` 把 Karpathy 的想法做成了纯 wiki 工具。intern-clawd 的差异是在 wiki 层之上加了**人格 + 仪式 + 多入口**，做成秘书而不是档案柜。
 
 ---
 
