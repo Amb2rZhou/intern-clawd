@@ -19,6 +19,7 @@
 | | intern-clawd | OpenClaw | 裸 Claude Code |
 |---|---|---|---|
 | 定位 | Claude Code 上的私人秘书 | 自托管 AI agent（多 IM 接入） | 通用编程助手 |
+| 费用 | $0（随 Claude Code 订阅走） | API 按量付费（Opus 4.6: $15/$75 per MTok） | $20/mo Max 或 $100/mo Pro |
 | 运行方式 | 纯文件，零服务 | Node.js 常驻服务 | 内置 |
 | 知识持久化 | ✅ 双域 wiki（work / life），三层架构 | ⚠️ skill 文件 + 对话记忆 | ⚠️ auto-memory 扁平笔记 |
 | 角色 + 仪式 | ✅ 秘书人格 + 站会/周会/复盘… | ⚠️ skill 系统（自由定义） | ❌ 每次需手动 prompt |

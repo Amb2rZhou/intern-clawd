@@ -19,6 +19,7 @@ This is **not yet another LLM wiki**. It's a complete secretary operating system
 | | intern-clawd | OpenClaw | Vanilla Claude Code |
 |---|---|---|---|
 | Purpose | Personal secretary on top of Claude Code | Self-hosted AI agent (multi-IM access) | General coding assistant |
+| Cost | $0 (runs on your Claude Code subscription) | API pay-per-use (Opus 4.6: $15/$75 per MTok) | $20/mo Max or $100/mo Pro |
 | Runtime | Pure files, zero services | Node.js long-running service | Built-in |
 | Knowledge persistence | ✅ Dual-domain wiki (work / life), three-layer architecture | ⚠️ Skill files + conversation memory | ⚠️ Flat auto-memory notes |
 | Persona + rituals | ✅ Secretary persona + standup / weekly / reflect… | ⚠️ Skill system (user-defined) | ❌ Manual prompting each time |
