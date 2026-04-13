@@ -6,7 +6,7 @@
 
 [中文](README.md) | **English**
 
-Turn Claude Code from "an amnesiac coding tool that forgets every session" into "a personal secretary with memory, rhythm, and growth — one that evolves with you."
+Turn Claude Code from "an amnesiac coding tool that forgets every session" into "a personal secretary with memory that grows with you."
 
 This is **not yet another LLM wiki**. It's a complete secretary operating system — the knowledge base is just one of its organs.
 
