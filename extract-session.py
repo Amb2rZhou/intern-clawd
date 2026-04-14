@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-从 Claude Code JSONL transcript 提取完整对话记录为 Markdown。
-SessionEnd hook 调用，或手动: python3 extract-session.py <session_id>
+Extract full conversation from Claude Code JSONL transcript to Markdown.
+Called by SessionEnd hook, or manually: python3 extract-session.py <session_id>
 
-输出到 ~/.clawd/raw/sessions/{date}_{session_id:.8}_{title}.md
+Output: ~/.clawd/raw/sessions/{date}_{session_id:.8}_{title}.md
 """
 
 import json, sys, os, re, glob
@@ -16,14 +16,14 @@ RAW_SESSIONS.mkdir(parents=True, exist_ok=True)
 
 
 def find_jsonl(session_id: str) -> Path | None:
-    """在 ~/.claude/projects/ 下找 session 的 JSONL 文件。"""
+    """Find session JSONL file under ~/.claude/projects/."""
     for f in CLAUDE_DIR.rglob(f"{session_id}.jsonl"):
         return f
     return None
 
 
 def extract_messages(jsonl_path: Path) -> list[dict]:
-    """从 JSONL 提取对话消息。"""
+    """Extract conversation messages from JSONL."""
     messages = []
     with open(jsonl_path, encoding="utf-8") as f:
         for line in f:
@@ -38,7 +38,6 @@ def extract_messages(jsonl_path: Path) -> list[dict]:
             msg_type = entry.get("type")
 
             if msg_type == "user":
-                # 用户消息
                 content = entry.get("message", {}).get("content", "")
                 if isinstance(content, list):
                     text_parts = []
@@ -47,7 +46,7 @@ def extract_messages(jsonl_path: Path) -> list[dict]:
                             if block.get("type") == "text":
                                 text_parts.append(block.get("text", ""))
                             elif block.get("type") == "image":
-                                text_parts.append("[图片]")
+                                text_parts.append("[image]")
                         elif isinstance(block, str):
                             text_parts.append(block)
                     content = "\n".join(text_parts)
@@ -55,7 +54,6 @@ def extract_messages(jsonl_path: Path) -> list[dict]:
                     messages.append({"role": "user", "content": content.strip()})
 
             elif msg_type == "assistant":
-                # Claude 回复
                 content = entry.get("message", {}).get("content", "")
                 if isinstance(content, list):
                     text_parts = []
@@ -66,7 +64,6 @@ def extract_messages(jsonl_path: Path) -> list[dict]:
                             elif block.get("type") == "tool_use":
                                 tool = block.get("name", "?")
                                 inp = block.get("input", {})
-                                # 精简工具调用显示
                                 if tool == "Bash":
                                     cmd = inp.get("command", "")[:200]
                                     text_parts.append(f"```bash\n# [Tool: {tool}]\n{cmd}\n```")
@@ -79,7 +76,7 @@ def extract_messages(jsonl_path: Path) -> list[dict]:
                                 else:
                                     text_parts.append(f"> [Tool: {tool}]")
                             elif block.get("type") == "tool_result":
-                                pass  # 跳过工具结果（太长）
+                                pass
                         elif isinstance(block, str):
                             text_parts.append(block)
                     content = "\n\n".join(p for p in text_parts if p.strip())
@@ -96,11 +93,10 @@ def extract_messages(jsonl_path: Path) -> list[dict]:
 
 
 def guess_title(messages: list[dict]) -> str:
-    """从前几条消息猜标题。"""
+    """Guess title from the first few messages."""
     for msg in messages[:3]:
         if msg["role"] == "user":
             text = msg["content"][:60].strip()
-            # 清理非法文件名字符
             text = re.sub(r'[/\\:*?"<>|\n\r]', '_', text)
             text = text.strip('_. ')
             if text:
@@ -109,8 +105,7 @@ def guess_title(messages: list[dict]) -> str:
 
 
 def format_markdown(messages: list[dict], session_id: str, jsonl_path: Path) -> str:
-    """格式化为 Markdown。"""
-    # 获取时间
+    """Format as Markdown."""
     stat = jsonl_path.stat()
     created = datetime.fromtimestamp(stat.st_ctime).strftime("%Y-%m-%d %H:%M")
     modified = datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M")
@@ -152,7 +147,6 @@ def format_markdown(messages: list[dict], session_id: str, jsonl_path: Path) -> 
 
 def main():
     if len(sys.argv) < 2:
-        # 没有参数时，从 stdin 读取 hook JSON（SessionEnd hook 模式）
         try:
             hook_data = json.load(sys.stdin)
             session_id = hook_data.get("session_id", "")

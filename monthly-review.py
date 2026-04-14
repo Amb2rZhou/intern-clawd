@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-月会：冷门清理 + 月度总结，每月 1 号发送到飞书。
+Monthly review: stale project cleanup + monthly summary, sent via IM on the 1st.
 
-用法:
-  python3 monthly-review.py           # 生成并发送
-  python3 monthly-review.py --dry-run # 只打印不发送
+Usage:
+  python3 monthly-review.py           # Generate and send
+  python3 monthly-review.py --dry-run # Print only, don't send
 """
 
 import re
@@ -75,7 +75,7 @@ def find_stale_projects(domain):
 
 def build_monthly_review():
     now = datetime.now()
-    lines = [f"📅 月会 — {now.strftime('%Y年%m月')}", ""]
+    lines = [f"Monthly Review — {now.strftime('%Y-%m')}", ""]
 
     all_stale = []
 
@@ -84,46 +84,42 @@ def build_monthly_review():
         active_proj, stale_proj = find_stale_projects(domain)
 
         lines.append(f"{'='*20}")
-        lines.append(f"【{domain.upper()}】")
+        lines.append(f"[{domain.upper()}]")
         lines.append("")
 
-        # 活跃项目
         if active_proj:
-            lines.append(f"活跃项目 ({len(active_proj)}):")
+            lines.append(f"Active projects ({len(active_proj)}):")
             for p in active_proj:
-                lines.append(f"  ✅ {p['name']} — {p['desc']}")
+                lines.append(f"  + {p['name']} — {p['desc']}")
             lines.append("")
 
-        # 冷门项目
         if stale_proj:
-            lines.append(f"冷门项目 ({len(stale_proj)}):")
+            lines.append(f"Stale projects ({len(stale_proj)}):")
             for p in stale_proj:
-                lines.append(f"  ⚠️ {p['name']} — {p['days']}天未活跃")
+                lines.append(f"  ! {p['name']} — {p['days']} days inactive")
                 all_stale.append(f"[{domain}] {p['name']}")
             lines.append("")
 
-        # 本月活动统计
-        lines.append(f"本月活动: {len(entries)} 条记录")
+        lines.append(f"This month: {len(entries)} log entries")
         if entries:
-            # 按 operation 分类统计
             ops = {}
             for e in entries:
                 parts = e["title"].split("|")
                 op = parts[0].strip() if parts else "other"
                 ops[op] = ops.get(op, 0) + 1
             for op, count in sorted(ops.items(), key=lambda x: -x[1]):
-                lines.append(f"  • {op}: {count}次")
+                lines.append(f"  * {op}: {count}x")
         lines.append("")
 
-    # 底部操作提示
     lines.append("---")
     if all_stale:
-        lines.append(f"有 {len(all_stale)} 个冷门项目，逐个回复:")
+        lines.append(f"{len(all_stale)} stale projects. For each, reply:")
         for s in all_stale:
-            lines.append(f"  「归档 {s.split('] ')[1]}」或「继续 {s.split('] ')[1]}」")
+            proj_name = s.split('] ')[1]
+            lines.append(f"  'archive {proj_name}' or 'resume {proj_name}'")
         lines.append("")
-    lines.append("回复「周会」看本周详情")
-    lines.append("回复「复盘」做深度回顾")
+    lines.append("Reply 'weekly' for this week's details")
+    lines.append("Reply 'reflect' for a deep retrospective")
 
     return "\n".join(lines)
 
@@ -136,7 +132,7 @@ def main():
     print()
 
     if dry_run:
-        print("[monthly] dry-run 模式，不发送")
+        print("[monthly] Dry run, not sending")
     else:
         send_feishu_message(review, tag="monthly")
 

@@ -28,7 +28,7 @@ CLAUDE_DIR = Path.home() / ".claude"
 PROJECTS_DIR = CLAUDE_DIR / "projects"
 TARGETS_DIR = CLAUDE_DIR / "session-targets"
 LOG_FILE = CLAUDE_DIR / "session-relocate.log"
-MARKER_TTL_DAYS = 7  # 超过 7 天未消费的 marker 视为孤儿（kill -9 / 崩溃残留）
+MARKER_TTL_DAYS = 7
 
 
 def log(msg: str) -> None:
@@ -76,10 +76,7 @@ def append_custom_title(jsonl_path: Path, session_id: str, title: str) -> None:
 
 
 def sweep_orphan_markers() -> None:
-    """删除超过 MARKER_TTL_DAYS 天未被消费的孤儿 marker。
-
-    场景：claude 被 kill -9 或系统崩溃 → SessionEnd hook 没跑 → marker 留下
-    """
+    """Remove orphan markers older than MARKER_TTL_DAYS (left behind by kill -9 or crashes)."""
     if not TARGETS_DIR.exists():
         return
     cutoff = time.time() - MARKER_TTL_DAYS * 86400
@@ -93,7 +90,6 @@ def sweep_orphan_markers() -> None:
 
 
 def main():
-    # 顺手清理孤儿 marker（每次 SessionEnd 都跑一次，几乎零成本）
     sweep_orphan_markers()
 
     try:
@@ -146,8 +142,6 @@ def main():
         log(f"[relocate] move failed: {e}")
         return
 
-    # 同名 sidecar 目录也跟着搬：subagents/ + tool-results/
-    # 路径形如 ~/.claude/projects/<dir>/<session_id>/{subagents,tool-results}
     sidecar = jsonl.parent / session_id
     if sidecar.exists() and sidecar.is_dir():
         target_sidecar = target_dir / session_id

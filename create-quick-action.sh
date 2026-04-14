@@ -1,11 +1,11 @@
 #!/bin/bash
-# 创建 macOS Quick Action: "收集到 Wiki"
-# 运行一次即可，会在 ~/Library/Services/ 生成 .workflow
+# Create macOS Quick Action: "Capture to Wiki"
+# Run once to generate a .workflow in ~/Library/Services/
 
-WORKFLOW_DIR="$HOME/Library/Services/收集到Wiki.workflow/Contents"
+WORKFLOW_DIR="$HOME/Library/Services/Capture to Wiki.workflow/Contents"
 mkdir -p "$WORKFLOW_DIR"
 
-# Info.plist — Quick Action 元数据
+# Info.plist — Quick Action metadata
 cat > "$WORKFLOW_DIR/Info.plist" << 'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -17,7 +17,7 @@ cat > "$WORKFLOW_DIR/Info.plist" << 'PLIST'
 			<key>NSMenuItem</key>
 			<dict>
 				<key>default</key>
-				<string>收集到Wiki</string>
+				<string>Capture to Wiki</string>
 			</dict>
 			<key>NSMessage</key>
 			<string>runWorkflowAsService</string>
@@ -159,8 +159,8 @@ cat > "$WORKFLOW_DIR/document.wflow" << 'WFLOW'
 </plist>
 WFLOW
 
-echo "Quick Action 已创建: ~/Library/Services/收集到Wiki.workflow"
+echo "Quick Action created: ~/Library/Services/Capture to Wiki.workflow"
 echo ""
-echo "设置快捷键:"
-echo "  系统设置 → 键盘 → 键盘快捷键 → 服务 → 文本"
-echo "  找到「收集到Wiki」，设置快捷键（建议 ⌃⌥C）"
+echo "To set up the hotkey:"
+echo "  System Settings -> Keyboard -> Keyboard Shortcuts -> Services -> Text"
+echo "  Find 'Capture to Wiki', assign a shortcut (suggested: ctrl+opt+C)"

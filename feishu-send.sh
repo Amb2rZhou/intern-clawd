@@ -1,6 +1,6 @@
 #!/bin/bash
-# 发送消息到飞书群，触发秘书 agent 处理
-# 用法: feishu-send.sh "消息内容"
+# Send a message to Feishu (Lark) chat
+# Usage: feishu-send.sh "message content"
 
 MSG="$1"
 if [ -z "$MSG" ]; then exit 1; fi

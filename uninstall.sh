@@ -1,13 +1,13 @@
 #!/bin/bash
-# 一键卸载 intern-clawd
-# 用法: bash uninstall.sh
+# One-step uninstaller for intern-clawd
+# Usage: bash uninstall.sh
 #
-# 设计原则:
-# - 每个改动前先备份
-# - 默认不删 ~/.clawd 知识库（你的笔记是最值钱的，需要二次确认）
-# - 自动生成 restore.sh，反悔可以一键回滚
-# - 幂等：重复跑不会出错
-# - 不程序化操作 macOS Shortcuts.app（风险大），提示手动
+# Design principles:
+# - Back up before every change
+# - Does NOT delete ~/.clawd knowledge base by default (your notes are the most valuable part)
+# - Auto-generates restore.sh for one-command rollback
+# - Idempotent: safe to run multiple times
+# - Does NOT touch macOS Shortcuts.app programmatically (too risky) — prompts manual removal
 
 set -e
 
@@ -17,14 +17,14 @@ TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 BACKUP_DIR="$HOME/.clawd-uninstall-backup/$TIMESTAMP"
 
 echo "=== intern-clawd uninstaller ==="
-echo "备份目录: $BACKUP_DIR"
+echo "Backup directory: $BACKUP_DIR"
 echo ""
 
 mkdir -p "$BACKUP_DIR"
 
-# ---- 1. 备份所有要改的文件 ----
+# ---- 1. Back up everything we're about to change ----
 
-echo "[1/8] 备份当前状态..."
+echo "[1/8] Backing up current state..."
 
 if [[ -f "$CLAUDE_DIR/CLAUDE.md" ]]; then
     cp "$CLAUDE_DIR/CLAUDE.md" "$BACKUP_DIR/CLAUDE.md.bak"
@@ -46,31 +46,31 @@ if [[ -f "$HOME/.zshrc" ]]; then
     echo "  ✓ ~/.zshrc"
 fi
 
-# ---- 2. 移除全局 CLAUDE.md 的 wiki 同步段 ----
+# ---- 2. Remove wiki sync section from global CLAUDE.md ----
 
 echo ""
-echo "[2/8] 移除 ~/.claude/CLAUDE.md 中的 Wiki 同步段..."
-if [[ -f "$CLAUDE_DIR/CLAUDE.md" ]] && grep -q "Wiki 知识同步" "$CLAUDE_DIR/CLAUDE.md"; then
+echo "[2/8] Removing wiki sync section from ~/.claude/CLAUDE.md..."
+if [[ -f "$CLAUDE_DIR/CLAUDE.md" ]] && grep -q "Wiki Knowledge Sync\|Wiki 知识同步" "$CLAUDE_DIR/CLAUDE.md"; then
     /usr/bin/python3 - "$CLAUDE_DIR/CLAUDE.md" << 'PY'
 import sys, re
 path = sys.argv[1]
 with open(path, encoding="utf-8") as f:
     text = f.read()
-# 删除 "## Wiki 知识同步" 到下一个 "## " 之间（含本节）
-new = re.sub(r"\n*## Wiki 知识同步[\s\S]*?(?=\n## |\Z)", "\n", text)
+new = re.sub(r"\n*## Wiki Knowledge Sync[\s\S]*?(?=\n## |\Z)", "\n", text)
+new = re.sub(r"\n*## Wiki 知识同步[\s\S]*?(?=\n## |\Z)", "\n", new)
 new = new.rstrip() + "\n"
 with open(path, "w", encoding="utf-8") as f:
     f.write(new)
 PY
-    echo "  ✓ 已移除"
+    echo "  ✓ Removed"
 else
-    echo "  - 未找到该段，跳过"
+    echo "  - Not found, skipping"
 fi
 
-# ---- 3. 移除 settings.json 里 clawd 相关的 hooks ----
+# ---- 3. Remove clawd-related hooks from settings.json ----
 
 echo ""
-echo "[3/8] 清理 ~/.claude/settings.json 里的 clawd hooks..."
+echo "[3/8] Cleaning clawd hooks from ~/.claude/settings.json..."
 if [[ -f "$CLAUDE_DIR/settings.json" ]]; then
     /usr/bin/python3 - "$CLAUDE_DIR/settings.json" << 'PY'
 import json, sys
@@ -104,43 +104,43 @@ if not hooks:
 
 with open(path, "w", encoding="utf-8") as f:
     json.dump(data, f, indent=2, ensure_ascii=False)
-print(f"  ✓ 移除了 {removed} 个相关 hook 条目")
+print(f"  ✓ Removed {removed} related hook entries")
 PY
 else
-    echo "  - 文件不存在，跳过"
+    echo "  - File not found, skipping"
 fi
 
-# ---- 4. 删 ~/.claude/hooks/ 里 clawd 相关脚本 ----
+# ---- 4. Delete clawd scripts from ~/.claude/hooks/ ----
 
 echo ""
-echo "[4/8] 删除 ~/.claude/hooks/ 里的 clawd 脚本..."
+echo "[4/8] Removing clawd scripts from ~/.claude/hooks/..."
 for script in session-relocate.py mark-session-project.sh; do
     if [[ -f "$CLAUDE_DIR/hooks/$script" ]]; then
         cp "$CLAUDE_DIR/hooks/$script" "$BACKUP_DIR/hooks-$script.bak"
         rm "$CLAUDE_DIR/hooks/$script"
-        echo "  ✓ 删除 $script（已备份）"
+        echo "  ✓ Deleted $script (backed up)"
     fi
 done
 
-# ---- 5. 移除 cron 里的 reorganize-index ----
+# ---- 5. Remove clawd cron entries ----
 
 echo ""
-echo "[5/8] 清理 crontab 里 clawd 相关条目..."
+echo "[5/8] Cleaning clawd entries from crontab..."
 if crontab -l 2>/dev/null | grep -q "reorganize-index.py\|clawd"; then
     crontab -l 2>/dev/null \
       | grep -v "reorganize-index.py" \
       | grep -v "Wiki index reorganize" \
       | grep -v "wiki-maintenance.py" \
       | crontab -
-    echo "  ✓ 已移除"
+    echo "  ✓ Removed"
 else
-    echo "  - 未找到，跳过"
+    echo "  - Not found, skipping"
 fi
 
-# ---- 6. 移除 ~/.zshrc 的 clawd alias ----
+# ---- 6. Remove clawd aliases from ~/.zshrc ----
 
 echo ""
-echo "[6/8] 清理 ~/.zshrc 的 clawd alias..."
+echo "[6/8] Cleaning clawd aliases from ~/.zshrc..."
 if [[ -f "$HOME/.zshrc" ]] && grep -q "alias clawd\|alias inbox=" "$HOME/.zshrc"; then
     /usr/bin/python3 - "$HOME/.zshrc" << 'PY'
 import sys
@@ -156,44 +156,44 @@ keep = [l for l in lines if not (
 with open(path, "w", encoding="utf-8") as f:
     f.writelines(keep)
 PY
-    echo "  ✓ 已移除（重启 terminal 生效）"
+    echo "  ✓ Removed (restart terminal to take effect)"
 else
-    echo "  - 未找到，跳过"
+    echo "  - Not found, skipping"
 fi
 
-# ---- 7. 询问是否删 ~/.clawd 数据 ----
+# ---- 7. Ask about ~/.clawd data ----
 
 echo ""
-echo "[7/8] ~/.clawd 知识库数据..."
+echo "[7/8] ~/.clawd knowledge base..."
 if [[ -d "$CLAWD_DIR" ]]; then
-    echo "  ⚠️  $CLAWD_DIR 包含你所有的笔记/log/wiki 内容"
-    echo "  默认不删。如果确定要删，输入 'delete my notes' 继续："
+    echo "  ⚠️  $CLAWD_DIR contains all your notes/logs/wiki content"
+    echo "  Not deleted by default. To delete, type 'delete my notes':"
     read -r CONFIRM
     if [[ "$CONFIRM" == "delete my notes" ]]; then
         mv "$CLAWD_DIR" "$BACKUP_DIR/clawd-data"
-        echo "  ✓ 已移到 $BACKUP_DIR/clawd-data（仍可手动还原）"
+        echo "  ✓ Moved to $BACKUP_DIR/clawd-data (can still be restored manually)"
     else
-        echo "  - 保留 ~/.clawd 不动"
+        echo "  - Keeping ~/.clawd intact"
     fi
 else
-    echo "  - ~/.clawd 不存在，跳过"
+    echo "  - ~/.clawd not found, skipping"
 fi
 
-# ---- 8. 生成 restore.sh ----
+# ---- 8. Generate restore.sh ----
 
 echo ""
-echo "[8/8] 生成 restore.sh..."
+echo "[8/8] Generating restore.sh..."
 cat > "$BACKUP_DIR/restore.sh" << RESTORE
 #!/bin/bash
 # Auto-generated by intern-clawd uninstaller at $TIMESTAMP
-# 一键还原本次卸载操作
+# One-command rollback of this uninstall
 set -e
 BACKUP_DIR="$BACKUP_DIR"
 CLAUDE_DIR="$CLAUDE_DIR"
 CLAWD_DIR="$CLAWD_DIR"
 
 echo "=== intern-clawd restore ==="
-echo "从 \$BACKUP_DIR 还原"
+echo "Restoring from \$BACKUP_DIR"
 echo ""
 
 [[ -f "\$BACKUP_DIR/CLAUDE.md.bak" ]] && cp "\$BACKUP_DIR/CLAUDE.md.bak" "\$CLAUDE_DIR/CLAUDE.md" && echo "  ✓ CLAUDE.md"
@@ -211,28 +211,28 @@ done
 
 if [[ -d "\$BACKUP_DIR/clawd-data" ]]; then
     if [[ -e "\$CLAWD_DIR" ]]; then
-        echo "  ⚠️  \$CLAWD_DIR 已存在，跳过数据还原（请手动处理 \$BACKUP_DIR/clawd-data）"
+        echo "  ⚠️  \$CLAWD_DIR already exists, skipping data restore (manually move from \$BACKUP_DIR/clawd-data)"
     else
         mv "\$BACKUP_DIR/clawd-data" "\$CLAWD_DIR"
-        echo "  ✓ ~/.clawd 数据已还原"
+        echo "  ✓ ~/.clawd data restored"
     fi
 fi
 
 echo ""
-echo "完成。重启 terminal 让 alias 生效。"
+echo "Done. Restart your terminal for alias changes to take effect."
 RESTORE
 chmod +x "$BACKUP_DIR/restore.sh"
 echo "  ✓ $BACKUP_DIR/restore.sh"
 
-# ---- 收尾提示 ----
+# ---- Final notes ----
 
 echo ""
-echo "=== 卸载完成 ==="
+echo "=== Uninstall complete ==="
 echo ""
-echo "下面这些需要手动操作（uninstall.sh 不碰）："
-echo "  1. macOS Shortcuts.app: 删除绑定 ⌃⌥C 的「收集到 inbox」shortcut"
-echo "  2. ~/.claude-to-im/    : 如果装过手机渠道 bridge，按它自己的 README 卸载"
+echo "These require manual action (uninstall.sh does not touch them):"
+echo "  1. macOS Shortcuts.app: delete the ctrl+opt+C shortcut for 'Capture to inbox'"
+echo "  2. ~/.claude-to-im/: if you installed the mobile IM bridge, follow its own README to uninstall"
 echo ""
-echo "反悔了？跑这个一键还原："
+echo "Changed your mind? Run this to restore everything:"
 echo "  bash $BACKUP_DIR/restore.sh"
 echo ""

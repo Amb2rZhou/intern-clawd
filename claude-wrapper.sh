@@ -10,13 +10,16 @@ REAL_CLAUDE="${CLAUDE_BIN:-$(command -v claude || echo $HOME/.local/bin/claude)}
 CLAWD_DIR="${CLAWD_DIR:-$HOME/.clawd}"
 
 # Read language preference from boss-profile.md (default: English)
+# Only matches the "Language:" field line; skips placeholder lines containing "e.g."
 LANG_PREF="English"
 if [[ -f "$CLAWD_DIR/shared-wiki/boss-profile.md" ]]; then
-    _detected=$(grep -i "english\|中文\|chinese\|japanese\|日本語" "$CLAWD_DIR/shared-wiki/boss-profile.md" | head -1)
-    case "$_detected" in
-        *中文*|*Chinese*) LANG_PREF="Chinese" ;;
-        *日本語*|*Japanese*) LANG_PREF="Japanese" ;;
-    esac
+    _lang_line=$(grep -iE "^\s*-\s*(Language|语言)" "$CLAWD_DIR/shared-wiki/boss-profile.md" | grep -v "e\.g\." | head -1)
+    if [[ -n "$_lang_line" ]]; then
+        case "$_lang_line" in
+            *中文*|*Chinese*|*chinese*) LANG_PREF="Chinese" ;;
+            *日本語*|*Japanese*|*japanese*) LANG_PREF="Japanese" ;;
+        esac
+    fi
 fi
 LANG_INSTRUCTION="Reply in ${LANG_PREF}. Use a helpful, non-directive tone (suggest, don't command)."
 

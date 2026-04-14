@@ -1,4 +1,4 @@
-"""飞书 API 工具函数（共享）"""
+"""Feishu (Lark) API utility functions."""
 
 import json
 import subprocess
@@ -29,31 +29,31 @@ def curl_json(method, url, headers=None, data=None):
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=15)
         return json.loads(result.stdout) if result.stdout else {}
     except Exception as e:
-        print(f"[feishu] curl 失败: {e}")
+        print(f"[feishu] curl failed: {e}")
         return {}
 
 
 def send_feishu_message(text, tag="feishu"):
     app_id, app_secret, chat_name = load_feishu_config()
     if not app_id or not app_secret:
-        print(f"[{tag}] 未找到飞书凭证")
+        print(f"[{tag}] Feishu credentials not found")
         return False
 
     resp = curl_json("POST", "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal",
                      data={"app_id": app_id, "app_secret": app_secret})
     token = resp.get("tenant_access_token")
     if not token:
-        print(f"[{tag}] 获取 token 失败")
+        print(f"[{tag}] Failed to get token")
         return False
 
     resp = curl_json("GET", "https://open.feishu.cn/open-apis/im/v1/chats?page_size=20",
                      headers={"Authorization": f"Bearer {token}"})
     items = resp.get("data", {}).get("items", [])
     if not items:
-        print(f"[{tag}] 未找到群聊")
+        print(f"[{tag}] No chat found")
         return False
 
-    # 按群名匹配（config.env 里设 CTI_FEISHU_CHAT_NAME），没设就用第一个
+    # Match by chat name (CTI_FEISHU_CHAT_NAME in config.env), fall back to first
     chat_id = items[0]["chat_id"]
     if chat_name:
         for item in items:
@@ -66,8 +66,8 @@ def send_feishu_message(text, tag="feishu"):
                      data={"receive_id": chat_id, "msg_type": "text", "content": content})
 
     if resp.get("code") == 0:
-        print(f"[{tag}] 已发送到飞书")
+        print(f"[{tag}] Sent to Feishu")
         return True
     else:
-        print(f"[{tag}] 发送失败: {resp}")
+        print(f"[{tag}] Send failed: {resp}")
         return False

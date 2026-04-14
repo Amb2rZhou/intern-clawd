@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-每周自动生成周会摘要并发送到飞书。
-由 cron 在每周日 20:00 触发。
+Auto-generate weekly summary and send via IM.
+Triggered by cron every Sunday at 20:00.
 
-用法:
-  python3 weekly-report.py           # 生成摘要并发送
-  python3 weekly-report.py --dry-run # 只打印不发送
+Usage:
+  python3 weekly-report.py           # Generate and send
+  python3 weekly-report.py --dry-run # Print only, don't send
 """
 
 import re
@@ -17,7 +17,7 @@ CLAWD_DIR = Path.home() / ".clawd"
 
 
 def read_recent_logs(domain, days=7):
-    """读取最近 N 天的 log 条目"""
+    """Read log entries from the last N days."""
     log_path = CLAWD_DIR / domain / "wiki" / "log.md"
     if not log_path.exists():
         return []
@@ -27,7 +27,6 @@ def read_recent_logs(domain, days=7):
     current_entry = None
 
     for line in log_path.read_text().strip().split("\n"):
-        # 匹配 log 标题行
         match = re.match(r'^## \[(\d{4}-\d{2}-\d{2}) \d{2}:\d{2}\] (.+)$', line)
         if match:
             date_str, title = match.groups()
@@ -47,7 +46,7 @@ def read_recent_logs(domain, days=7):
 
 
 def read_active_projects(domain):
-    """读取活跃项目列表"""
+    """Read active project list from index."""
     index_path = CLAWD_DIR / domain / "wiki" / "index.md"
     if not index_path.exists():
         return []
@@ -62,39 +61,37 @@ def read_active_projects(domain):
 
 
 def build_weekly_summary():
-    """构建周报摘要"""
-    lines = ["📊 周会摘要", f"日期: {datetime.now().strftime('%Y-%m-%d')}", ""]
+    """Build weekly summary text."""
+    lines = ["Weekly Summary", f"Date: {datetime.now().strftime('%Y-%m-%d')}", ""]
 
     for domain in ["work", "life"]:
         entries = read_recent_logs(domain, days=7)
         projects = read_active_projects(domain)
 
         lines.append(f"{'='*20}")
-        lines.append(f"【{domain.upper()}】")
+        lines.append(f"[{domain.upper()}]")
         lines.append("")
 
-        # 活跃项目
         if projects:
-            lines.append("活跃项目:")
+            lines.append("Active projects:")
             for p in projects:
-                lines.append(f"  • {p['name']} — {p['desc']} (active: {p['active']})")
+                lines.append(f"  * {p['name']} — {p['desc']} (active: {p['active']})")
             lines.append("")
 
-        # 本周活动
         if entries:
-            lines.append(f"本周活动 ({len(entries)} 条):")
+            lines.append(f"This week ({len(entries)} entries):")
             for e in entries:
-                lines.append(f"  • [{e['date']}] {e['title']}")
-                for b in e["body"][:2]:  # 最多 2 行摘要
+                lines.append(f"  * [{e['date']}] {e['title']}")
+                for b in e["body"][:2]:
                     lines.append(f"    {b}")
             lines.append("")
         else:
-            lines.append("本周活动: 无记录")
+            lines.append("This week: no activity recorded")
             lines.append("")
 
     lines.append("---")
-    lines.append("回复「周会」开始详细讨论")
-    lines.append("回复「复盘」对某个项目做深度回顾")
+    lines.append("Reply 'weekly' for detailed discussion")
+    lines.append("Reply 'reflect' for a deep retrospective")
 
     return "\n".join(lines)
 
@@ -111,7 +108,7 @@ def main():
     print()
 
     if dry_run:
-        print("[weekly] dry-run 模式，不发送")
+        print("[weekly] Dry run, not sending")
     else:
         send_feishu_message(summary, tag="weekly")
 

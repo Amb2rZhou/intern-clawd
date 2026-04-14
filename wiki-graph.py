@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-生成 wiki 知识关系图（交互式 HTML + d3.js）。
-扫描 work/life/shared-wiki 下所有 .md 文件，提取 [[wiki-links]] 和 tags，
-生成力导向图，浏览器打开。
+Generate an interactive wiki knowledge graph (HTML + d3.js).
+Scans work/life/shared-wiki for all .md files, extracts [[wiki-links]] and tags,
+builds a force-directed graph, opens in browser.
 
-用法: python3 wiki-graph.py [--no-open]
+Usage: python3 wiki-graph.py [--no-open]
 """
 
 import re, json, os, sys, webbrowser
@@ -15,9 +15,9 @@ OUTPUT = CLAWD_DIR / "wiki-graph.html"
 
 
 def scan_wiki_pages():
-    """扫描所有 wiki 页面，提取节点和边。"""
-    nodes = {}  # id -> {label, domain, tags, path}
-    edges = []  # [{source, target}]
+    """Scan all wiki pages, extract nodes and edges."""
+    nodes = {}
+    edges = []
 
     domains = {
         "work": CLAWD_DIR / "work" / "wiki",
@@ -33,16 +33,13 @@ def scan_wiki_pages():
             node_id = str(rel.with_suffix(""))
             label = node_id.split("/")[-1]
 
-            # 读 frontmatter
             tags = []
             content = md.read_text(encoding="utf-8", errors="replace")
 
-            # 提取 tags
             tag_match = re.search(r"^tags:\s*\[([^\]]*)\]", content, re.MULTILINE)
             if tag_match:
                 tags = [t.strip().strip("'\"") for t in tag_match.group(1).split(",") if t.strip()]
 
-            # 提取 title
             title_match = re.search(r"^title:\s*(.+)$", content, re.MULTILINE)
             if title_match:
                 label = title_match.group(1).strip()
@@ -56,12 +53,9 @@ def scan_wiki_pages():
                 "path": str(md),
             }
 
-            # 提取 [[wiki-links]]
             links = re.findall(r"\[\[([^\]]+)\]\]", content)
             for link in links:
                 link = link.strip()
-                # 尝试解析链接目标
-                # [[project-name]] -> 在同域下查找
                 target_candidates = [
                     f"{domain}/{link}",
                     f"{domain}/projects/{link}",
@@ -77,7 +71,6 @@ def scan_wiki_pages():
                     "candidates": target_candidates,
                 })
 
-            # 提取 linked_from frontmatter
             lf_match = re.search(r"^linked_from:\s*\[([^\]]*)\]", content, re.MULTILINE)
             if lf_match:
                 for lf in lf_match.group(1).split(","):
@@ -89,7 +82,6 @@ def scan_wiki_pages():
                             "candidates": [f"{domain}/{lf}", f"{domain}/projects/{lf}"],
                         })
 
-    # 解析边的目标
     resolved_edges = []
     for edge in edges:
         resolved = None
@@ -98,7 +90,6 @@ def scan_wiki_pages():
                 resolved = candidate
                 break
         if not resolved:
-            # 跨域查找
             for nid in nodes:
                 if nid.endswith("/" + edge["target_name"]) or nid.endswith("/projects/" + edge["target_name"]):
                     resolved = nid
@@ -106,7 +97,6 @@ def scan_wiki_pages():
         if resolved and resolved != edge["source"]:
             resolved_edges.append({"source": edge["source"], "target": resolved})
 
-    # 去重
     seen = set()
     unique_edges = []
     for e in resolved_edges:
@@ -120,8 +110,7 @@ def scan_wiki_pages():
 
 
 def generate_html(nodes, edges):
-    """生成包含 d3.js 力导向图的 HTML。"""
-    # 计算连接数
+    """Generate HTML with d3.js force-directed graph."""
     conn_count = {}
     for e in edges:
         conn_count[e["source"]] = conn_count.get(e["source"], 0) + 1
@@ -185,7 +174,6 @@ const simulation = d3.forceSimulation(data.nodes)
 
 const g = svg.append("g");
 
-// zoom
 svg.call(d3.zoom().scaleExtent([0.2, 5]).on("zoom", e => g.attr("transform", e.transform)));
 
 const link = g.append("g")
@@ -244,16 +232,15 @@ simulation.on("tick", () => {{
 def main():
     no_open = "--no-open" in sys.argv
 
-    print("=== intern-clawd Wiki 关系图生成 ===\n")
+    print("=== intern-clawd Wiki Graph ===\n")
 
     nodes, edges = scan_wiki_pages()
-    print(f"扫描完成: {len(nodes)} pages, {len(edges)} links")
+    print(f"Scan complete: {len(nodes)} pages, {len(edges)} links")
 
     if not nodes:
-        print("wiki 里还没有内容，导入一些历史 session 或开始使用后再生成图。")
+        print("Wiki is empty. Import some history or use the system for a while, then try again.")
         sys.exit(0)
 
-    # 按域统计
     for domain in ["work", "life", "shared"]:
         count = sum(1 for n in nodes if n["domain"] == domain)
         if count:
@@ -261,11 +248,11 @@ def main():
 
     html = generate_html(nodes, edges)
     OUTPUT.write_text(html, encoding="utf-8")
-    print(f"\n✓ 已生成: {OUTPUT}")
+    print(f"\n✓ Generated: {OUTPUT}")
 
     if not no_open:
         webbrowser.open(f"file://{OUTPUT}")
-        print("  已在浏览器打开")
+        print("  Opened in browser")
 
 
 if __name__ == "__main__":

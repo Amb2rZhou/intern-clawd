@@ -1,31 +1,30 @@
 #!/bin/bash
-# Claude Code SessionStart hook: 仅当 cwd 是秘书工作区 (~/.clawd 或子目录) 时
-# 注入双域 wiki index + progress.md。
+# Claude Code SessionStart hook: only when cwd is the secretary workspace (~/.clawd or subdirectory)
+# Injects dual-domain wiki index + progress.md.
 #
-# 设计：
-# - 秘书 persona / 规则 / 格式由 ~/.clawd/CLAUDE.md 提供（cwd 在 .clawd 时自动加载）
-# - 此 hook 只补充"动态内容"：index 当前状态 + 跨 session 接力
-# - 非秘书 cwd 直接 exit 0，由全局 ~/.claude/CLAUDE.md 的 wiki sync 规则兜底
+# Design:
+# - Secretary persona / rules / format come from ~/.clawd/CLAUDE.md (auto-loaded when cwd is .clawd)
+# - This hook only injects "dynamic content": current index state + cross-session continuity
+# - Non-secretary cwd exits immediately; global ~/.claude/CLAUDE.md wiki sync rule covers those
 #
-# 节省：每个非秘书 session ~1.4K tok；秘书 session 内部去重 ~1K tok
+# Savings: ~1.4K tok per non-secretary session; ~1K tok dedup within secretary sessions
 
 CLAWD_DIR="${CLAWD_DIR:-$HOME/.clawd}"
 
-# 读取 hook 输入
 INPUT=$(cat)
 
-# 纯 bash 提取 cwd（不启 python3，节省 50-200ms 启动开销）
-# JSON 形如 {"cwd":"/path/...","session_id":"..."}
+# Pure bash cwd extraction (skip python3, save 50-200ms startup)
+# JSON looks like {"cwd":"/path/...","session_id":"..."}
 CWD=$(printf '%s' "$INPUT" | grep -o '"cwd"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/.*"\([^"]*\)"$/\1/')
 
-# cwd 门控：只在 $CLAWD_DIR 工作区注入
-# 早返回——非秘书 session 根本不启动 python3，零污染裸 CC
+# Gate: only inject in $CLAWD_DIR workspace
+# Early return — non-secretary sessions don't start python3, zero pollution on vanilla CC
 case "$CWD" in
   "$CLAWD_DIR"|"$CLAWD_DIR"/*) ;;
   *) exit 0 ;;
 esac
 
-# 只有真在秘书工作区时才启 python3 拼上下文
+# Only start python3 when actually in secretary workspace
 /usr/bin/python3 -c "
 import json
 
@@ -37,7 +36,7 @@ def read_file(path, max_lines=50):
             lines = f.readlines()[:max_lines]
             return ''.join(lines).strip()
     except:
-        return '（空）'
+        return '(empty)'
 
 work_idx = read_file(f'{clawd}/work/wiki/index.md')
 life_idx = read_file(f'{clawd}/life/wiki/index.md')
@@ -51,26 +50,26 @@ for d in ['work', 'life']:
         archives.append(d)
 
 progress_block = ''
-if progress and progress != '（空）':
+if progress and progress != '(empty)':
     progress_block = f'''
 
-## 未完成任务（上个 session 遗留）
+## Pending Tasks (from previous session)
 {progress}
-请先处理或询问 boss 是否继续。'''
+Please handle these first or ask the boss whether to continue.'''
 
 archive_block = ''
 if archives:
     archive_block = f'''
 
-> 注意：{', '.join(archives)} 域有 index-archive.md（冷区），热区找不到相关页面时可以去冷区检索。'''
+> Note: {', '.join(archives)} domain(s) have index-archive.md (cold tier). Check cold tier if a relevant page isn't found in hot tier.'''
 
-# 只注入动态状态，人格/规则交给 ~/.clawd/CLAUDE.md
-prompt = f'''## Wiki 当前状态（动态注入）
+# Only inject dynamic state; persona/rules come from ~/.clawd/CLAUDE.md
+prompt = f'''## Wiki Current State (dynamically injected)
 
-### Work 域 index
+### Work domain index
 {work_idx}
 
-### Life 域 index
+### Life domain index
 {life_idx}{archive_block}{progress_block}'''
 
 print(json.dumps({'appendSystemPrompt': prompt}, ensure_ascii=False))

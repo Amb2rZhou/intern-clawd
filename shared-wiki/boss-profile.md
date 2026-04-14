@@ -7,35 +7,34 @@ sources: []
 linked_from: [coding-style.md]
 ---
 
-# 用户画像
+# User Profile
 
-> **首次安装必填**：删掉所有占位符 `_xxx_`，写成你自己的样子。
-> 这个文件会被注入到秘书的对话上下文里，是它了解你的唯一来源。
+> **First-time setup**: Replace all placeholders `_..._` with your own info.
+> This file is injected into the secretary's context — it's how it learns about you.
 
-## 身份
-- 名字 / 称呼：_（秘书怎么称呼你）_
-- 角色：_（你的职业 / 在哪工作 / 在做什么）_
-- 城市：_（可选）_
-- 语言偏好：_（如「中文优先」/「English only」/「中英混用」）_
+## Identity
+- Name: _your name or preferred way to be addressed_
+- Role: _what you do / where you work / what you're building_
+- Location: _(optional)_
+- Language: _your preferred reply language, e.g. "English", "Chinese", "Japanese"_
 
-## 工作风格偏好
-- _（例：精简回复，不要冗长解释）_
-- _（例：建议性表达，不用「必须」「应该」之类的指示性语气）_
-- _（例：不复述已知内容）_
-- _（例：技术任务先给最简单的解，不过度设计）_
+## Work Style Preferences
+- _(e.g., concise replies, skip lengthy explanations)_
+- _(e.g., suggestive tone — avoid "must", "should", or other directive language)_
+- _(e.g., don't restate things I already know)_
+- _(e.g., simplest fix first, don't over-engineer)_
 
-## 当前长期目标
-- _（例：找一份 X 类岗位的工作）_
-- _（例：把 Y 项目做到 Z 状态）_
-- _（这些目标会影响秘书在「周会」「复盘」时的建议方向）_
+## Current Long-Term Goals
+- _(e.g., land a job in X field)_
+- _(e.g., ship project Y by date Z)_
+- _(these goals shape suggestions during weekly reviews and retrospectives)_
 
-## 不要碰的红线
-- _（例：不要在 implication 里出现某品牌名）_
-- _（例：不要主动 push 任何东西到公开仓库）_
-- _（例：周末不接受工作类提醒）_
+## Hard Rules
+- _(e.g., never push to public repos without asking)_
+- _(e.g., no work reminders on weekends)_
 
-## 当前在做的项目（高层）
-> 详细信息维护在 `work/wiki/projects/` 和 `life/wiki/projects/`，这里只列名字方便秘书快速 grok。
+## Active Projects (high-level)
+> Details live in `work/wiki/projects/` and `life/wiki/projects/`. This is just a quick reference.
 
 - _project-1_
 - _project-2_

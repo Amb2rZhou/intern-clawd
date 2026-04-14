@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Wiki index 自动整理：按 active 日期排序，活跃的在前，冷门的沉底。
-找出 30 天未活跃的条目，生成提问清单。
+Wiki index auto-reorganizer: sort by active date, surface stale entries.
+Finds entries inactive for 30+ days and generates a question list.
 
-用法:
-  python3 reorganize-index.py              # 整理并打印结果
-  python3 reorganize-index.py --ask        # 整理并通过飞书/微信发提问
+Usage:
+  python3 reorganize-index.py              # Reorganize and print results
+  python3 reorganize-index.py --ask        # Reorganize and send questions via IM
 """
 
 import re
@@ -21,22 +21,21 @@ except ImportError:
 
 CLAWD_DIR = Path.home() / ".clawd"
 STALE_DAYS = 30
-TIER_THRESHOLD = 50  # 超过此条目数时拆分热区/冷区
+TIER_THRESHOLD = 50  # Split hot/cold tiers above this entry count
 
 
 def parse_index(path):
-    """解析 index.md，提取条目和 active 日期"""
+    """Parse index.md, extract entries and active dates."""
     if not path.exists():
-        return "", [], []
+        return "", []
 
     lines = path.read_text().strip().split("\n")
     sections = []
     current_section = None
     current_items = []
-    preamble = []  # title + 首个 ## 之前的内容
+    preamble = []
 
     for line in lines:
-        # 检测 section 标题
         if line.startswith("## "):
             if current_section:
                 sections.append((current_section, current_items))
@@ -44,19 +43,17 @@ def parse_index(path):
             current_items = []
             continue
 
-        # 首个 section 之前的内容保留到 preamble
         if current_section is None:
             preamble.append(line)
             continue
 
-        # 解析条目行（兼容 em-dash 和普通 dash）
         match = re.match(r'^- \[(.+?)\]\((.+?)\)\s+[—\-]+\s+(.+?)(?:\s+`active:(\d{4}-\d{2}-\d{2})`)?$', line)
         if match:
             name, link, desc, active_date = match.groups()
             try:
                 active = datetime.strptime(active_date, "%Y-%m-%d") if active_date else datetime(2020, 1, 1)
             except ValueError:
-                print(f"[reorganize] 警告: 日期格式异常 '{active_date}'，跳过")
+                print(f"[reorganize] Warning: malformed date '{active_date}', skipping")
                 active = datetime(2020, 1, 1)
             current_items.append({
                 "name": name,
@@ -66,7 +63,6 @@ def parse_index(path):
                 "raw": line
             })
         elif line.strip() and not line.startswith("#"):
-            # 非条目行（如 _暂无_），原样保留
             current_items.append({"raw": line, "active": None})
 
     if current_section:
@@ -76,24 +72,20 @@ def parse_index(path):
 
 
 def sort_and_find_stale(sections):
-    """按 active 日期排序，找出过期条目"""
+    """Sort by active date, find stale entries."""
     stale = []
     cutoff = datetime.now() - timedelta(days=STALE_DAYS)
 
     for section_title, items in sections:
-        # 分离可排序和不可排序的条目
         sortable = [i for i in items if i.get("active") is not None]
         unsortable = [i for i in items if i.get("active") is None]
 
-        # 按 active 降序排列（最近的在前）
         sortable.sort(key=lambda x: x["active"], reverse=True)
 
-        # 找出过期的
         for item in sortable:
             if item["active"] < cutoff:
                 stale.append((section_title, item))
 
-        # 替换回 items
         items.clear()
         items.extend(sortable + unsortable)
 
@@ -101,8 +93,7 @@ def sort_and_find_stale(sections):
 
 
 def rebuild_index(preamble, sections):
-    """重建 index.md"""
-    # 去掉 preamble 尾部空行，再加一个空行分隔
+    """Rebuild index.md content."""
     trimmed = list(preamble)
     while trimmed and not trimmed[-1].strip():
         trimmed.pop()
@@ -119,10 +110,9 @@ def rebuild_index(preamble, sections):
 
 
 def tier_split(sections):
-    """当条目总数超过 TIER_THRESHOLD 时，把冷门条目拆到 archive sections"""
+    """When total entries exceed TIER_THRESHOLD, split cold entries into archive."""
     cutoff = datetime.now() - timedelta(days=STALE_DAYS)
 
-    # 统计总可排序条目数
     total = sum(1 for _, items in sections for i in items if i.get("active") is not None)
     if total <= TIER_THRESHOLD:
         return sections, [], 0
@@ -136,7 +126,7 @@ def tier_split(sections):
         cold_items = []
         for item in items:
             if item.get("active") is None:
-                hot_items.append(item)  # 非条目行留在热区
+                hot_items.append(item)
             elif item["active"] >= cutoff:
                 hot_items.append(item)
             else:
@@ -163,23 +153,18 @@ def main():
 
         stale = sort_and_find_stale(sections)
 
-        # 分层拆分：热区留 index.md，冷区移到 index-archive.md
         hot_sections, cold_sections, cold_count = tier_split(sections)
 
         if cold_count > 0:
-            # 写热区
             new_content = rebuild_index(preamble, hot_sections)
             index_path.write_text(new_content)
 
-            # 读已有冷区存档（如果有），合并
             if archive_path.exists():
                 _, existing_cold = parse_index(archive_path)
-                # 按 section title 合并
                 merged = {}
                 for title, items in existing_cold + cold_sections:
                     if title not in merged:
                         merged[title] = []
-                    # 去重（按 link）
                     existing_links = {i.get("link") for i in merged[title] if i.get("link")}
                     for item in items:
                         if item.get("link") and item["link"] not in existing_links:
@@ -190,36 +175,34 @@ def main():
                 cold_sections = list(merged.items())
 
             archive_preamble = [f"# {domain.title()} Wiki Index (Archive)", "",
-                                f"> {STALE_DAYS} 天未活跃的条目自动归入此文件，秘书按需检索。"]
+                                f"> Entries inactive for {STALE_DAYS}+ days are automatically moved here. The secretary checks as needed."]
             archive_content = rebuild_index(archive_preamble, cold_sections)
             archive_path.write_text(archive_content)
-            print(f"[reorganize] {domain}: {cold_count} 条冷门条目移入 index-archive.md")
+            print(f"[reorganize] {domain}: {cold_count} stale entries moved to index-archive.md")
         else:
-            # 没有冷区拆分，只重排
             new_content = rebuild_index(preamble, sections)
             index_path.write_text(new_content)
 
-        print(f"[reorganize] {domain}/wiki/index.md 已按活跃度重排")
+        print(f"[reorganize] {domain}/wiki/index.md sorted by activity")
 
-        # 收集过期条目的提问
         for section, item in stale:
             days = (datetime.now() - item["active"]).days
-            questions.append(f"[{domain}] {item['name']}：已 {days} 天未活跃。还在进行中吗？要不要归档？")
+            questions.append(f"[{domain}] {item['name']}: inactive for {days} days. Still in progress? Archive it?")
 
     if questions:
-        print(f"\n[reorganize] 发现 {len(questions)} 个冷门条目:")
+        print(f"\n[reorganize] Found {len(questions)} stale entries:")
         for q in questions:
             print(f"  - {q}")
 
         if ask_mode and send_feishu_message:
-            msg_lines = ["Wiki 整理提醒", ""]
+            msg_lines = ["Wiki Reorganization Reminder", ""]
             for q in questions:
                 msg_lines.append(f"- {q}")
             msg_lines.append("")
-            msg_lines.append("回复「归档 项目名」或「继续 项目名」来决定")
+            msg_lines.append("Reply 'archive <project>' or 'resume <project>' to decide")
             send_feishu_message("\n".join(msg_lines), tag="reorganize")
     else:
-        print("[reorganize] 所有条目都活跃，无需提问")
+        print("[reorganize] All entries active, nothing to ask about")
 
 
 if __name__ == "__main__":
