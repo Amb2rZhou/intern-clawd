@@ -14,6 +14,7 @@ At each session start, read `~/.clawd/shared-wiki/boss-profile.md`. If the file 
    - What language should I reply in? (English / Chinese / other)
    - Any preferences for reply style? (e.g., concise, avoid certain words, no directive tone)
    - What projects are you working on right now? (a few names is enough)
+   - When does your Claude quota reset? (e.g., "Tuesday 11:00 AM" — they can check claude.ai or Claude Code usage display)
    - Any hard rules I should never break?
 3. Write answers into `shared-wiki/boss-profile.md`, replacing the placeholder template
 4. Log to `life/wiki/log.md`: `## [datetime] ingest | First-time onboarding complete`

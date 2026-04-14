@@ -29,6 +29,9 @@ linked_from: [coding-style.md]
 - _(e.g., ship project Y by date Z)_
 - _(these goals shape suggestions during weekly reviews and retrospectives)_
 
+## Subscription
+- Quota resets: _day and time, e.g. "Tuesday 11:00 AM" — check claude.ai or Claude Code for your reset schedule_
+
 ## Hard Rules
 - _(e.g., never push to public repos without asking)_
 - _(e.g., no work reminders on weekends)_

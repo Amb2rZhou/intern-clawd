@@ -25,7 +25,7 @@
 | 没有"角色"概念，每次都得重复 prompt | CLAUDE.md 里写死秘书人格 + 7 个固定 ritual（站会/周会/复盘/归档/继续/inbox/lint） |
 | 工作和生活的笔记混在一起 | 双域架构：work/ + life/，独立 index 和 log |
 | `~` 启动的 session 全堆在一个文件夹 | Session 路由 hooks 自动按项目搬 jsonl |
-| 知识库容易腐烂 | wiki-lint + 月度自动维护 + post-write 自检 |
+| 知识库容易腐烂 | wiki-lint + 每周自动维护 + post-write 自检 |
 
 ---
 
@@ -182,7 +182,7 @@ onboarding 完成后，试几个命令感受一下：
 ├── extract-session.py         # SessionEnd: 提取对话到 raw/sessions/
 │
 ├── wiki-lint.py               # wiki 健康检查
-├── wiki-maintenance.py        # 月度全面维护（cron）
+├── wiki-maintenance.py        # 每周全面维护（额度刷新前夜自动执行）
 ├── wiki-graph.py              # 关系图生成（HTML + d3.js）
 ├── import-history.py          # 历史 session 导入
 ├── reorganize-index.py        # 每日 index 整理
@@ -310,7 +310,7 @@ wrapper 会自动处理命令路由（站会、周会等触发词）和上下文
 | 角色 + 仪式 | ✅ 秘书人格 + 站会/周会/复盘… | ⚠️ skill 系统（自由定义） | ❌ 每次需手动 prompt |
 | 多渠道 capture | ✅ 终端 + 快捷键 + IM（可选） | ✅ 终端 + IM | ✅ 终端 + IM（需自建） |
 | Session 路由 | ✅ 自动按项目归档 jsonl | ❌ | ❌ 按 cwd 堆积 |
-| 自维护 | ✅ lint + 月度维护 + 分层 index | ❌ | ❌ |
+| 自维护 | ✅ lint + 每周维护 + 分层 index | ❌ | ❌ |
 | 依赖 | Python 3 + Claude Code | Node 22+，独立运行 | 无 |
 | 安装 | `clone + setup.sh`（3 分钟） | 一键脚本（需 Node） | 内置 |
 | 卸载 | ✅ `uninstall.sh` + 回退脚本 | ✅ | — |

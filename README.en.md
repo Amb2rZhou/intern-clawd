@@ -25,7 +25,7 @@ Vanilla Claude Code is just "a coding assistant that works one session at a time
 | No "role" concept, you re-prompt every time | Persona baked into CLAUDE.md + 7 fixed rituals (standup / weekly / reflect / archive / resume / inbox / lint) |
 | Work and personal notes get mixed up | Dual-domain architecture: `work/` + `life/`, independent index and log |
 | Sessions started from `~` all pile into one folder | Session routing hooks auto-relocate JSONLs by project |
-| Knowledge bases rot | wiki-lint + monthly auto-maintenance + post-write self-check |
+| Knowledge bases rot | wiki-lint + weekly auto-maintenance + post-write self-check |
 
 ---
 
@@ -181,7 +181,7 @@ The Chinese keywords (站会/周会/复盘/处理 inbox/归档/继续/检查/导
 ├── extract-session.py         # SessionEnd: extract conversations to raw/sessions/
 │
 ├── wiki-lint.py               # Wiki health check
-├── wiki-maintenance.py        # Monthly full maintenance (cron)
+├── wiki-maintenance.py        # Weekly maintenance (auto-runs eve of quota reset)
 ├── wiki-graph.py              # Relationship graph (HTML + d3.js)
 ├── import-history.py          # Historical session import
 ├── reorganize-index.py        # Daily index reorganization
@@ -258,7 +258,7 @@ See [`RISKS.md`](RISKS.md) "How to undo" section for details.
 - **Multiple capture entries** — when you see something worth saving, you should be able to save it in 3 seconds
 - **Role > tool** — the secretary has a persona, rituals, preferences. It is not a generic chatbot
 - **Immutable persistence layer** — `raw/` is read-only for the agent, so hallucinations can't poison the source
-- **Self-check over manual maintenance** — wiki-lint + post-write self-check + monthly maintenance, the system takes care of itself
+- **Self-check over manual maintenance** — wiki-lint + post-write self-check + weekly maintenance, the system takes care of itself
 
 ---
 
@@ -296,7 +296,7 @@ This repo includes a Feishu (Lark) reference implementation (`feishu_utils.py` /
 | Persona + rituals | ✅ Secretary persona + standup / weekly / reflect… | ⚠️ Skill system (user-defined) | ❌ Manual prompting each time |
 | Multi-channel capture | ✅ Terminal + hotkey + IM (optional) | ✅ Terminal + IM | ✅ Terminal + IM (DIY) |
 | Session routing | ✅ Auto-archives JSONLs by project | ❌ | ❌ Piles up by cwd |
-| Self-maintenance | ✅ Lint + monthly maintenance + tiered index | ❌ | ❌ |
+| Self-maintenance | ✅ Lint + weekly maintenance + tiered index | ❌ | ❌ |
 | Dependencies | Python 3 + Claude Code | Node 22+, runs standalone | None |
 | Install | `clone + setup.sh` (3 min) | One-liner script (needs Node) | Built-in |
 | Uninstall | ✅ `uninstall.sh` + rollback script | ✅ | — |

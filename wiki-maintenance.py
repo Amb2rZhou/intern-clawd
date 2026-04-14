@@ -3,14 +3,17 @@
 Wiki auto-maintenance: LLM periodic wake-up to clean and organize the knowledge base.
 Based on Andrej Karpathy's LLM Wiki design pattern.
 
-Schedule: first Saturday of each month at 09:07 (finishes well before the 6th/7th)
-Method: calls claude -p for comprehensive maintenance, sends IM notification with results
+Schedule: runs via daily cron, but only executes the evening before the user's
+Claude quota resets (read from boss-profile.md "Quota resets:" field).
+This uses leftover weekly tokens that would otherwise go to waste.
 
 Usage:
-  python3 wiki-maintenance.py           # Run maintenance
+  python3 wiki-maintenance.py           # Run maintenance (skips if not the right day)
+  python3 wiki-maintenance.py --force   # Run regardless of schedule
   python3 wiki-maintenance.py --dry-run # Print prompt only, don't execute
 """
 
+import re
 import subprocess
 import sys
 from datetime import datetime
@@ -22,6 +25,37 @@ from feishu_utils import send_feishu_message
 CLAWD_DIR = Path.home() / ".clawd"
 REAL_CLAUDE = Path.home() / ".local/bin/claude"
 LOG_FILE = CLAWD_DIR / "maintenance.log"
+
+DAY_NAMES = {
+    "monday": 0, "tuesday": 1, "wednesday": 2, "thursday": 3,
+    "friday": 4, "saturday": 5, "sunday": 6,
+    "mon": 0, "tue": 1, "wed": 2, "thu": 3, "fri": 4, "sat": 5, "sun": 6,
+}
+
+
+def get_reset_weekday() -> int | None:
+    """Read quota reset day from boss-profile.md. Returns weekday int (0=Mon) or None."""
+    profile = CLAWD_DIR / "shared-wiki/boss-profile.md"
+    if not profile.exists():
+        return None
+    for line in profile.read_text(encoding="utf-8").splitlines():
+        m = re.match(r"^-\s*Quota resets?:\s*(.+)", line, re.IGNORECASE)
+        if not m:
+            continue
+        value = m.group(1).strip().lower()
+        for name, weekday in DAY_NAMES.items():
+            if name in value:
+                return weekday
+    return None
+
+
+def is_maintenance_day() -> bool:
+    """True if tomorrow is the quota reset day (i.e., tonight we should use leftover tokens)."""
+    reset_day = get_reset_weekday()
+    if reset_day is None:
+        return datetime.now().weekday() == 0  # default: Monday evening (assumes Tuesday reset)
+    tomorrow = (datetime.now().weekday() + 1) % 7
+    return tomorrow == reset_day
 
 def read_file(path, max_lines=80):
     try:
@@ -40,7 +74,7 @@ def build_prompt():
 
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
 
-    return f"""You are the Wiki maintainer. Current time: {now}. Perform monthly auto-maintenance.
+    return f"""You are the Wiki maintainer. Current time: {now}. Perform weekly auto-maintenance.
 
 ## Current Knowledge Base State
 
@@ -92,7 +126,7 @@ def build_prompt():
 
 ### 6. Generate Maintenance Report
 When done, append a maintenance log entry to shared-wiki/log.md:
-## [{now}] maintenance | Monthly Wiki Maintenance
+## [{now}] maintenance | Weekly Wiki Maintenance
 
 Report should include:
 - Number of issues found and fixed
@@ -111,10 +145,17 @@ Report should include:
 
 def main():
     dry_run = "--dry-run" in sys.argv
+    force = "--force" in sys.argv
     prompt = build_prompt()
 
     if dry_run:
         print(prompt)
+        return
+
+    if not force and not is_maintenance_day():
+        reset_day = get_reset_weekday()
+        day_name = next((k for k, v in DAY_NAMES.items() if v == reset_day and len(k) > 3), "unknown") if reset_day is not None else "tuesday (default)"
+        print(f"[wiki-maintenance] Skipped — not the evening before quota reset ({day_name}). Use --force to override.")
         return
 
     from wiki_lint import lint_all
@@ -157,7 +198,7 @@ def main():
 
     summary = output[:400] if len(output) > 400 else output
     lint_info = f"\n\nLint: {len(pre_issues)}->{len(post_issues)} issues ({lint_delta} fixed)"
-    send_feishu_message(f"Wiki Monthly Maintenance Complete\n\n{summary}{lint_info}", tag="wiki-maintenance")
+    send_feishu_message(f"Wiki Weekly Maintenance Complete\n\n{summary}{lint_info}", tag="wiki-maintenance")
 
     print(f"[wiki-maintenance] Done")
 

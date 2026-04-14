@@ -200,7 +200,7 @@ source 类型：terminal / im / cron / shortcut
 
 ## Pattern Drift 检测（内容与源头一致性）
 
-月度维护时额外检查：
+每周维护时额外检查：
 1. 对比 wiki 页面的 `sources:` 字段指向的 raw source / GitHub 仓库，检查描述是否与源头一致
 2. 检查 GitHub 仓库有近期 commit 但 wiki 页面 updated 日期明显滞后的情况
 3. 发现漂移时在页面中标注 `> [!drift]` 提醒 boss 确认

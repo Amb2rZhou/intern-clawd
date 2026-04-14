@@ -92,12 +92,21 @@ fi
 
 # 6. Set up cron
 echo "[6/9] Setting up scheduled tasks..."
-CRON_LINE="7 9 * * * /usr/bin/python3 $CLAWD_DIR/reorganize-index.py --ask >> $CLAWD_DIR/reorganize.log 2>&1"
+REORG_CRON="7 9 * * * /usr/bin/python3 $CLAWD_DIR/reorganize-index.py --ask >> $CLAWD_DIR/reorganize.log 2>&1"
+MAINT_CRON="0 22 * * * /usr/bin/python3 $CLAWD_DIR/wiki-maintenance.py >> $CLAWD_DIR/maintenance.log 2>&1"
+
 if crontab -l 2>/dev/null | grep -q "reorganize-index.py"; then
-    echo "  Cron job already exists"
+    echo "  Cron: index reorganize already exists"
 else
-    (crontab -l 2>/dev/null; echo "# Wiki index reorganize - daily 9:07 AM"; echo "$CRON_LINE") | crontab -
+    (crontab -l 2>/dev/null; echo "# Wiki index reorganize - daily 9:07 AM"; echo "$REORG_CRON") | crontab -
     echo "  Added daily 9:07 AM index reorganization"
+fi
+
+if crontab -l 2>/dev/null | grep -q "wiki-maintenance.py"; then
+    echo "  Cron: wiki maintenance already exists"
+else
+    (crontab -l 2>/dev/null; echo "# Wiki maintenance - daily 10 PM, runs only eve of quota reset"; echo "$MAINT_CRON") | crontab -
+    echo "  Added nightly wiki maintenance (auto-skips unless quota resets tomorrow)"
 fi
 
 # 7. Install Claude Code hooks

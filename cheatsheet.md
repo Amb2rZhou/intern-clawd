@@ -47,7 +47,7 @@ You rarely need to run this manually — just tell claude "working on project X 
 | Script | What it does |
 |---|---|
 | `python3 ~/.clawd/wiki-lint.py` | Run wiki health check, output report |
-| `python3 ~/.clawd/wiki-maintenance.py` | Monthly full maintenance (auto-runs via cron) |
+| `python3 ~/.clawd/wiki-maintenance.py` | Weekly maintenance (auto-runs eve of quota reset, `--force` to override) |
 | `python3 ~/.clawd/weekly-report.py` | Generate weekly report |
 | `python3 ~/.clawd/monthly-review.py` | Monthly review |
 | `python3 ~/.clawd/import-history.py --scan` | Scan historical sessions (don't extract) |
