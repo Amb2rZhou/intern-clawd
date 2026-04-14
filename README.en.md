@@ -84,7 +84,7 @@ Once set up, type **`standup`** to see it in action. **Don't like it?** Run `bas
 
 - macOS 14+ (verified on macOS Sequoia 15.6)
 - Python 3.9+
-- [Claude Code CLI](https://docs.claude.com/claude-code) installed and `claude` on `PATH`
+- [Claude Code CLI](https://docs.claude.com/claude-code) 2.1+ (verified on 2.1.105)
 - git
 
 ### 1. Clone

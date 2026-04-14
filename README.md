@@ -84,7 +84,8 @@ cd ~/.clawd && bash setup.sh && source ~/.zshrc && clawd
 
 - macOS 14+（已验证 macOS Sequoia 15.6）
 - Python 3.9+
-- [Claude Code CLI](https://docs.claude.com/claude-code) 已装好且 `claude` 在 PATH 里
+- [Claude Code CLI](https://docs.claude.com/claude-code) 2.1+（已验证 2.1.105）
+
 - git
 
 ### 1. Clone
