@@ -60,8 +60,9 @@ for enc in ["utf-8", "gbk", "gb18030", "latin-1"]:
 
 content = content.strip()
 if not content:
-    subprocess.run(["/usr/bin/osascript", "-e",
-        "display notification \"No content selected\" with title \"Capture failed\""])
+    # Caller (Shortcut or terminal) sees stderr exit; no osascript notification
+    # here for the same reasons as below (permission + recursion).
+    print("[collect] No content in clipboard", file=sys.stderr)
     sys.exit(1)
 
 try:
@@ -75,9 +76,17 @@ except:
 with open(inbox, "a", encoding="utf-8") as f:
     f.write(f"\n## [{ts}] from: {source}\n\n{content}\n\n---\n")
 
-preview = content[:50].replace(chr(34), chr(39))
-subprocess.run(["/usr/bin/osascript", "-e",
-    f"display notification \"{preview}...\" with title \"Saved to inbox\""])
+# Notification responsibility lives in the caller:
+# - ⌃⌥C path: the Shortcut (see setup-new-machine.md §4) invokes this script
+#   and runs its own "Show Notification" action with the clipboard variable.
+# - Terminal path (`inbox` alias): the stdout print below is the feedback.
+# Why not osascript display notification here?
+#   1. New macOS (Sequoia+) requires notification permission for Script Editor /
+#      osascript, which is hard to grant (Script Editor doesn'\''t appear in
+#      Notification Center list; ad-hoc-signed osacompile .app gets rejected
+#      by Gatekeeper).
+#   2. If we called `shortcuts run "..."` here, it would recurse with the
+#      Shortcut that already invoked us (Shortcut → collect.sh → Shortcut → ...).
 
 print("[collect] Saved to inbox.md")
 

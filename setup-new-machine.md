@@ -100,45 +100,72 @@ ls ~/.claude/hooks/
 
 ## 4. 全局快捷键 ⌃⌥C 收集到 inbox（GUI 操作）
 
-> ⚠️ **不要用 `~/.clawd/create-quick-action.sh`**！它生成的 Automator workflow 在 macOS Sequoia 15.6 已经不兼容（`AMWorkflow checkDocumentVersion:` 抛异常），服务菜单虽然能看到但点不动。改用下面的 Shortcuts.app 路线。
+> ⚠️ **不要用 `~/.clawd/create-quick-action.sh`**！它生成的 Automator workflow 在 macOS Sequoia 15.6+ 已经不兼容（`AMWorkflow checkDocumentVersion:` 或 `unrecognized selector sent to instance objCType` 内部错误），服务菜单虽然能看到但点不动。改用下面的 Shortcuts.app 路线。
 
-### 4.1 在 Shortcuts.app 建快捷指令
+### 4.1 一键导入（推荐）
+
+**Mac 上点这个 iCloud 链接**：
+
+👉 https://www.icloud.com/shortcuts/0ac7c59e386148a88a4331df3d0ea889
+
+会自动用 Shortcuts.app 打开 → 点「**添加快捷指令**」即可。
+
+导入后默认叫「显示通知」，结构是：
+
+```
+① 获取剪贴板
+② 运行 Shell 脚本：bash ~/.clawd/collect.sh
+③ 显示通知（标题：已收集到 Wiki；正文：[剪贴板变量]）
+```
+
+跳到 4.3 绑全局快捷键。
+
+### 4.2 手动建（iCloud 链接失效时的兜底）
 
 1. Spotlight 搜「快捷指令」/ Shortcuts.app，打开
 2. 左上角 `+` 新建一个 shortcut
-3. 右侧搜索框输入 `shell` → 双击「**运行 Shell 脚本**」加进来
-4. 把脚本内容**全选删掉**，粘贴：
-   ```
-   $HOME/.clawd/collect.sh
-   ```
-   ⚠️ 一定要绝对路径，不要 `~`，Quick Action 沙盒里 `~` 不展开
-5. Shell 选 `/bin/zsh`，「以管理员身份运行」**不要勾**
-6. 再搜 `通知` → 双击「**显示通知**」加进来（osascript 在 Sequoia 静默失败，必须用 Shortcuts 内置通知）
+3. 右侧搜索框输入 `剪贴板` → 双击「**获取剪贴板**」加进来
+4. 再搜 `shell` → 双击「**运行 Shell 脚本**」加进来
+   - 脚本内容：`bash ~/.clawd/collect.sh`（绝对路径 `$HOME/.clawd/collect.sh` 也行）
+   - Shell：`/bin/zsh`
+   - 「输入」保持默认（collect.sh 自己用 `pbpaste` 读剪贴板，不读 stdin）
+   - 「以管理员身份运行」**不要勾**
+5. 再搜 `通知` → 双击「**显示通知**」加进来
+   - 顶部「显示 [文本] 通知」里的灰色「文本」槽 → 删掉 → 插入「**剪贴板**」变量（前一个动作的输出）
    - 标题：`已收集到 Wiki`
-   - 正文：`✓ 内容已存入 inbox`
-7. 右上角 `ⓘ` 信息按钮 → 「详细信息」tab → 勾选「**作为快速操作使用**」
-8. 改名（可选）：回主 Shortcuts 窗口右键卡片 → 重命名为「收集到Wiki」
+   - 「播放声音」按需勾/不勾
+6. 改名（可选）：右键卡片 → 重命名为 `ShowCollect` 或「收集到Wiki」
 
-### 4.2 绑全局快捷键（⚠️ 关键步骤，容易漏）
+### 4.3 绑全局快捷键
 
-Shortcuts.app 信息面板里设的「指定快捷键」**不会**自动同步到系统服务列表。必须手动到系统设置再绑一次：
+**新方法（推荐，简单）**：在 Shortcuts.app 内直接绑
 
 ```
-系统设置 → 键盘 → 键盘快捷键… → 服务（左侧栏）
-→ 「快捷指令」分组（点左边小三角展开）
-→ 找到刚建的那条
-→ 双击右边快捷键栏 → 按下 ⌃⌥C → 「完成」
+打开快捷指令 → 右上角 ⓘ 图标 → 详细信息 tab
+→ 「添加键盘快捷键」按钮 → 按 ⌃⌥C
 ```
 
-### 4.3 验证
+经测试，macOS Sequoia / Tahoe 上 Shortcuts.app 自己的键盘快捷键能全局生效，不需要再到系统设置走服务菜单。
+
+**老方法（兜底）**：如果上面快捷键没反应，再走系统设置：
+
+1. Shortcuts.app 信息面板的「详细信息」tab → 勾「**作为快速操作使用**」→「服务菜单」
+2. 系统设置 → 键盘 → 键盘快捷键… → 服务（左侧栏）→「快捷指令」分组 → 找到刚建的那条 → 双击右边快捷键栏 → 按下 ⌃⌥C → 「完成」
+
+### 4.4 验证
 
 ```bash
-# 选中任意文字，⌘C 复制，然后 ⌃⌥C
-# 验证：
-ls -la ~/.clawd/inbox.md  # mtime 应该是刚才的时间
+# 任意 app 选段文字，⌘C 复制，然后 ⌃⌥C（不需要先选文字，Shortcut 自己读剪贴板）
+ls -la ~/.clawd/inbox.md   # mtime 应该是刚才的时间
 tail ~/.clawd/inbox.md     # 看到刚复制的内容
-cat /tmp/collect-debug.log # 应该有调用记录
+cat /tmp/collect-debug.log # 应该有 called 记录
 ```
+
+### 4.5 注意事项
+
+- **不要在 `collect.sh` 里再调 `shortcuts run`**：会和 Shortcut 自身的 Show Notification 形成递归（Shortcut → collect.sh → Shortcut...）。通知统一由 Shortcut 第 3 步完成。
+- **`osascript display notification` 在新版 macOS 拿不到通知权限**：Script Editor 不在通知中心列表，自己编 .app 又被 Gatekeeper 拒。通知必须走 Shortcuts.app。
+- **「忽略输入」选项在新版 macOS 没了**：保持默认「输入」即可，collect.sh 不读 stdin 无影响。
 
 ---
 
@@ -147,8 +174,9 @@ cat /tmp/collect-debug.log # 应该有调用记录
 | 症状 | 原因 | 修法 |
 |---|---|---|
 | Quick Action 服务菜单可见但点不动 | `create-quick-action.sh` 生成的 workflow 跟 Sequoia 不兼容 | 不用 Automator，改 Shortcuts.app（见 §4） |
-| 通知没弹 | `osascript display notification` 在 Sequoia 被收紧，脚本编辑器/AppleScript 不出现在通知设置里 | 在 Shortcut 里加原生「显示通知」action |
-| Shortcuts.app 设的快捷键无效 | 信息面板里的「指定快捷键」没同步到系统服务列表 | 手动到系统设置 → 键盘快捷键 → 服务里再绑一遍 |
+| 通知没弹 | `osascript display notification` 在 Sequoia 被收紧，脚本编辑器/AppleScript 不出现在通知设置里 | 在 Shortcut 里加原生「显示通知」action（§4） |
+| Shortcuts.app 设的快捷键无效（老 macOS） | 老版本「指定快捷键」没同步到系统服务列表 | 新版（Sequoia/Tahoe）用 §4.3 新方法即可；老版走老方法到系统设置 → 键盘快捷键 → 服务再绑 |
+| 通知显示「Shell 脚本运行完成，有一个错误」+ subprocess.run 报错 | `collect.sh` 旧版里调了 `shortcuts run` 又被 Shortcut 调，递归崩 | 升级 `collect.sh` 到最新版（不再调 shortcuts run），由 Shortcut 自己 Show Notification |
 | Quick Action 调脚本 `~` 不展开 | macOS Quick Action 沙盒不展开 `~` | 改用绝对路径 `$HOME/.clawd/collect.sh` |
 | `~` cwd 启动的 session 全堆在 -Users-USERNAME/ | Claude Code 默认按启动 cwd 归档 | 装 `mark-session-project.sh` + `session-relocate.py` 路由 hooks |
 | permission-router 卡 600s | 上游 HTTP 服务不可达，curl 一直等 | router 加 `--connect-timeout 2`，并且 settings.json 里 PermissionRequest 只留 router 一条 |

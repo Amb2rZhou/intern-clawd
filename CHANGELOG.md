@@ -7,7 +7,33 @@ versioning follows [SemVer](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-(none yet)
+### Changed
+- **⌃⌥C capture: full migration to Shortcuts.app.** The Automator
+  `create-quick-action.sh` route remains broken on Sequoia 15.6+ (confirmed
+  again on a fresh Tahoe / 2026 install: triggering the Quick Action raises
+  `INTERNAL ERROR: -[__NSCFConstantString objCType]: unrecognized selector`
+  and the Services menu click does nothing). `create-quick-action.sh` now
+  carries a prominent DEPRECATED header pointing to the new path.
+- **`collect.sh` no longer calls `osascript display notification`.**
+  On new macOS this permission is effectively unreachable (Script Editor
+  doesn't appear in Notification Center's app list; ad-hoc-signed
+  `osacompile` apps get rejected by Gatekeeper). The notification is now
+  produced by the Shortcut itself (`Get Clipboard → Run Shell → Show
+  Notification` with the Clipboard variable), which inherits Shortcuts.app's
+  notification permission for free. Removing the osascript call also avoids a
+  recursion when the Shortcut is the caller (Shortcut → collect.sh →
+  shortcuts run → Shortcut → …).
+- **`setup-new-machine.md` §4 rewritten** with two install paths:
+  - **One-click iCloud share link** (recommended):
+    https://www.icloud.com/shortcuts/0ac7c59e386148a88a4331df3d0ea889
+  - **Step-by-step manual fallback** for when the iCloud link expires.
+  Keyboard binding now prefers Shortcuts.app's built-in "Add Keyboard
+  Shortcut" (works globally on Sequoia/Tahoe); the old System Settings →
+  Services route is retained as a fallback for older macOS.
+- **Troubleshooting table** gained a row for the
+  "Shell script error / subprocess.run" notification that appears when
+  `collect.sh` calls `shortcuts run` while itself invoked by a Shortcut
+  (the recursion case described above).
 
 ## [0.2.0] — 2026-04-13
 
